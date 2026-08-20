@@ -12,6 +12,8 @@ import { SubscribeModule } from './app/module/subscribe/subscribe.module';
 import { PaymentModule } from './app/module/payment/payment.module';
 import { WebhookModule } from './app/module/webhook/webhook.module';
 import { CourseModule } from './app/module/course/course.module';
+import { BusinesswonerModule } from './app/module/businesswoner/businesswoner.module';
+import { ApplicationFormModule } from './app/module/application/application-form.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { CourseModule } from './app/module/course/course.module';
     PaymentModule,
     WebhookModule,
     CourseModule,
+    BusinesswonerModule,
+    ApplicationFormModule,
   ],
   controllers: [AppController],
   providers: [AppService],
