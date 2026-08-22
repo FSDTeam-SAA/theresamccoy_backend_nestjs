@@ -96,6 +96,20 @@ export class CreateBusinesswonerDto {
   website?: string;
 
   @ApiPropertyOptional({
+    example: 'Full-time',
+  })
+  @IsString()
+  @IsNotEmpty()
+  supportType!: string;
+
+  @ApiPropertyOptional({
+    example: '$1000000 - $2000000',
+  })
+  @IsString()
+  @IsNotEmpty()
+  annualSales!: string;
+
+  @ApiPropertyOptional({
     example: 'Hybrid',
     description: 'Example: Onsite, Virtual, Hybrid',
   })

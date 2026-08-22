@@ -42,6 +42,12 @@ export class Businesswoner {
   website!: string;
 
   @Prop()
+  supportType!: string;
+
+  @Prop()
+  annualSales!: string;
+
+  @Prop()
   onsiteOnVirtual!: string;
 
   @Prop()
