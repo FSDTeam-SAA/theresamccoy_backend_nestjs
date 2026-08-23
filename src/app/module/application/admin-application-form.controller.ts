@@ -21,6 +21,8 @@ import AuthGuard from 'src/app/middlewares/auth.guard';
 import { UpdateApplicationFormDto } from './dto/admin/update-application-form.dto';
 
 @ApiTags('Admin Application Form')
+@ApiBearerAuth('access-token')
+@UseGuards(AuthGuard('admin'))
 @Controller('admin/application-forms')
 export class AdminApplicationFormController {
   constructor(
@@ -31,8 +33,6 @@ export class AdminApplicationFormController {
   @ApiOperation({
     summary: 'Admin create application form',
   })
-  @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('admin'))
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateApplicationFormDto) {
     const data = await this.applicationFormService.create(dto);

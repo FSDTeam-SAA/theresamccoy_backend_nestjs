@@ -155,6 +155,18 @@ export class ApplicationSubmission {
   })
   userId!: Types.ObjectId;
 
+  @Prop()
+  candidateName!: string;
+
+  @Prop()
+  date!: Date;
+
+  @Prop()
+  positionName!: string;
+
+  @Prop({ default: 45 })
+  time!: number;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: ApplicationForm.name,

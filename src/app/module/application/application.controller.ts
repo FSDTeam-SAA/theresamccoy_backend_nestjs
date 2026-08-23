@@ -1,11 +1,25 @@
-import { Body, Controller, Get, Param, Patch, Post, Req } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import type { Request } from 'express';
+import AuthGuard from 'src/app/middlewares/auth.guard';
 import { ApplicationFormService } from './application-form.service';
 import { ApplicationSubmissionService } from './application-submission.service';
-import type { Request } from 'express';
 import { CreateSubmissionDto } from './dto/user/create-submission.dto';
 
 @ApiTags('Application')
+@ApiBearerAuth('access-token')
+@UseGuards(AuthGuard('bookkeeper'))
 @Controller('applications')
 export class ApplicationController {
   constructor(
@@ -38,9 +52,9 @@ export class ApplicationController {
   @ApiOperation({
     summary: 'Save application form answers as draft',
   })
+  @HttpCode(HttpStatus.OK)
   async save(
     @Req() req: Request,
-
     @Body()
     dto: CreateSubmissionDto,
   ) {

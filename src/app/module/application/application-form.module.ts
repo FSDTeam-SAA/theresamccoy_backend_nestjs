@@ -19,6 +19,7 @@ import { ApplicationSubmissionService } from './application-submission.service';
 import { AdminApplicationFormController } from './admin-application-form.controller';
 
 import { ApplicationController } from './application.controller';
+import { AdminApplicationSubmissionController } from './admin-application-submission.controller';
 
 @Module({
   imports: [
@@ -35,7 +36,11 @@ import { ApplicationController } from './application.controller';
     ]),
   ],
 
-  controllers: [AdminApplicationFormController, ApplicationController],
+  controllers: [
+    AdminApplicationFormController,
+    AdminApplicationSubmissionController,
+    ApplicationController,
+  ],
 
   providers: [ApplicationFormService, ApplicationSubmissionService],
 

@@ -3,9 +3,13 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 import {
+  Allow,
   IsArray,
+  IsDate,
   IsMongoId,
+  IsNumber,
   IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
 
@@ -19,6 +23,7 @@ export class SubQuestionAnswerDto {
   @ApiProperty({
     example: '=SUM(B2:B50)',
   })
+  @Allow()
   value!: unknown;
 }
 
@@ -26,11 +31,13 @@ export class TableCellAnswerDto {
   @ApiProperty({
     example: 'amount',
   })
+  @IsString()
   columnKey!: string;
 
   @ApiProperty({
     example: 185.4,
   })
+  @Allow()
   value!: unknown;
 }
 
@@ -83,6 +90,31 @@ export class UserQuestionAnswerDto {
 }
 
 export class CreateSubmissionDto {
+  @ApiProperty({
+    example: 'Saurav',
+  })
+  @IsString()
+  candidateName!: string;
+
+  @ApiProperty({
+    example: new Date(),
+  })
+  @Type(() => Date)
+  @IsDate()
+  date!: Date;
+
+  @ApiProperty({
+    example: 'Software Engineer',
+  })
+  @IsString()
+  positionName!: string;
+
+  @ApiProperty({
+    example: 45,
+  })
+  @IsNumber()
+  time!: number;
+
   @ApiProperty({
     example: '68a68cfc09987428170d1111',
   })
