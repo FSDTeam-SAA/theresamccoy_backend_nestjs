@@ -1,6 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 // export class QuizOptionDto {
 //   @ApiProperty({
@@ -145,6 +152,16 @@ export class CreateCourseDto {
   })
   price!: number;
 
+  @ApiPropertyOptional({ enum: ['beginner', 'intermediate', 'advanced'] })
+  @IsOptional()
+  @IsEnum(['beginner', 'intermediate', 'advanced'])
+  level?: string;
+
+  @ApiPropertyOptional({ enum: ['draft', 'published'] })
+  @IsOptional()
+  @IsEnum(['draft', 'published'])
+  status?: string;
+
   @ApiPropertyOptional({
     example: 'Theresa May',
   })
@@ -192,6 +209,21 @@ export class AddModuleDto {
 }
 
 export class AddLessonDto {
+  @ApiProperty({ example: 'Introduction to QuickBooks' })
+  @IsString()
+  name!: string;
+
+  @ApiPropertyOptional({ example: 'Basic QuickBooks concepts' })
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @ApiPropertyOptional({ example: 15 })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  durationMinutes?: number;
+
   @ApiPropertyOptional({
     type: 'string',
     format: 'binary',
@@ -215,6 +247,21 @@ export class AddLessonDto {
   })
   @IsOptional()
   thumbnail?: unknown;
+
+  @ApiPropertyOptional({ example: 'Module 3 Practical Assignment' })
+  @IsOptional()
+  @IsString()
+  assignmentTitle?: string;
+
+  @ApiPropertyOptional({ example: 'Complete the tasks and upload a PDF.' })
+  @IsOptional()
+  @IsString()
+  assignmentInstructions?: string;
+
+  @ApiPropertyOptional({ example: '2026-12-31T23:59:59.000Z' })
+  @IsOptional()
+  @IsDateString()
+  assignmentDueDate?: string;
 }
 
 export class AddQuizDto {
