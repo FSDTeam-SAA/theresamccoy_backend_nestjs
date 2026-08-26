@@ -10,13 +10,13 @@ export class User {
     required: [true, 'Full name is required'],
     trim: true,
   })
-  firstName: string;
+  firstName!: string;
 
   @Prop({
     required: [true, 'First name is required'],
     trim: true,
   })
-  lastName: string;
+  lastName!: string;
 
   @Prop({
     required: [true, 'Email is required'],
@@ -24,28 +24,28 @@ export class User {
     lowercase: true,
     trim: true,
   })
-  email: string;
+  email!: string;
 
   @Prop({
     required: [true, 'Password is required'],
     minlength: 6,
     select: false,
   })
-  password: string;
+  password!: string;
 
   @Prop({
     enum: ['bookkeeper', 'business', 'admin'],
   })
-  role: string;
+  role!: string;
 
   @Prop()
-  phoneNumber: string;
+  phoneNumber!: string;
 
   @Prop()
-  address: string;
+  address!: string;
 
   @Prop()
-  profilePicture: string;
+  profilePicture!: string;
 
   @Prop()
   otp?: string;
@@ -54,13 +54,13 @@ export class User {
   otpExpiry?: Date;
 
   @Prop({ enum: ['active', 'suspended'], default: 'active' })
-  status: string;
+  status!: string;
 
   @Prop()
-  verifiedForget: boolean;
+  verifiedForget!: boolean;
 
   @Prop()
-  stripeAccountId: string;
+  stripeAccountId!: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

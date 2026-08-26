@@ -14,6 +14,7 @@ import { WebhookModule } from './app/module/webhook/webhook.module';
 import { CourseModule } from './app/module/course/course.module';
 import { BusinesswonerModule } from './app/module/businesswoner/businesswoner.module';
 import { ApplicationFormModule } from './app/module/application/application-form.module';
+import { BookkeeperModule } from './app/module/bookkeeper/bookkeeper.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ApplicationFormModule } from './app/module/application/application-form
     CourseModule,
     BusinesswonerModule,
     ApplicationFormModule,
+    BookkeeperModule,
   ],
   controllers: [AppController],
   providers: [AppService],
