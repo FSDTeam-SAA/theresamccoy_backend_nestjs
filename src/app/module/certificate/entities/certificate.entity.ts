@@ -5,19 +5,23 @@ export type CertificateDocument = HydratedDocument<Certificate>;
 
 @Schema({ timestamps: true })
 export class Certificate {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Bookkeeper' })
-  bookkeeperId?: Types.ObjectId;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Bookkeeper',
+    required: true,
+  })
+  bookkeeperId!: Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Course' })
-  courseId?: Types.ObjectId;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true })
+  courseId!: Types.ObjectId;
 
-  @Prop()
+  @Prop({ required: true, trim: true })
   title!: string;
 
-  @Prop()
-  issueData!: Date;
+  @Prop({ required: true })
+  issueDate!: Date;
 
-  @Prop()
+  @Prop({ required: true, unique: true, trim: true })
   certificateID!: string;
 
   @Prop()

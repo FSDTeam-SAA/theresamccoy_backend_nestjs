@@ -1,28 +1,31 @@
-// create-certificate.dto.ts
-
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsMongoId,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class CreateCertificateDto {
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: '6417b9f4b9f4b9f4b9f4b9f4',
   })
-  @IsOptional()
   @IsMongoId()
-  bookkeeperId?: string;
+  bookkeeperId!: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     example: '6417b9f4b9f4b9f4b9f4b9f4',
   })
-  @IsOptional()
   @IsMongoId()
-  courseId?: string;
+  courseId!: string;
 
   @ApiProperty({
     example: 'Professional Bookkeeping Certificate',
   })
   @IsString()
+  @MinLength(1)
   title!: string;
 
   @ApiProperty({
@@ -36,6 +39,7 @@ export class CreateCertificateDto {
     example: '12SASF456',
   })
   @IsString()
+  @MinLength(1)
   certificateID!: string;
 
   @ApiPropertyOptional({
