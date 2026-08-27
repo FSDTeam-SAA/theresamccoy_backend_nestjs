@@ -1,4 +1,24 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateBookkeeperDto } from './create-bookkeeper.dto';
+import { IntersectionType, PartialType } from '@nestjs/swagger';
+import {
+  CreateBookkeeperAssessmentDto,
+  CreateBookkeeperAvailabilityDto,
+  CreateBookkeeperDto,
+  CreateBookkeeperSkillsDto,
+  CreateExperienceDto,
+} from './create-bookkeeper.dto';
 
-export class UpdateBookkeeperDto extends PartialType(CreateBookkeeperDto) {}
+class CompleteBookkeeperDto extends IntersectionType(
+  CreateBookkeeperDto,
+  IntersectionType(
+    CreateExperienceDto,
+    IntersectionType(
+      CreateBookkeeperSkillsDto,
+      IntersectionType(
+        CreateBookkeeperAssessmentDto,
+        CreateBookkeeperAvailabilityDto,
+      ),
+    ),
+  ),
+) {}
+
+export class UpdateBookkeeperDto extends PartialType(CompleteBookkeeperDto) {}
