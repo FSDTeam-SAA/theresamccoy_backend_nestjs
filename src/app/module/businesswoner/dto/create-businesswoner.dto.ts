@@ -96,6 +96,11 @@ export class CreateBusinesswonerDto {
   @IsUrl()
   website?: string;
 
+  @ApiPropertyOptional({ example: 'Ongoing support' })
+  @IsString()
+  @IsNotEmpty()
+  supportType!: string;
+
   @ApiPropertyOptional({
     type: [String],
     example: ['Ongoing bookkeeping', 'Catch-up / cleanup work'],

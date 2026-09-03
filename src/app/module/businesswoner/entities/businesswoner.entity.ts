@@ -47,6 +47,9 @@ export class Businesswoner {
   @Prop()
   website!: string;
 
+  @Prop()
+  supportType!: string;
+
   @Prop({ type: [String], default: [] })
   engagementTypes!: string[];
 
