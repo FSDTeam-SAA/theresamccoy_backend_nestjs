@@ -62,7 +62,7 @@ export class CourseService {
     }
 
     if (file) {
-      const uploadedFile = await fileUpload.uploadToCloudinary(file);
+      const uploadedFile = await fileUpload.uploadToS3(file);
       createCourseDto.photo = uploadedFile.url;
     }
 
@@ -180,7 +180,7 @@ export class CourseService {
   ) {
     const updateData = { ...dto };
     if (photoFile) {
-      const photo = await fileUpload.uploadToCloudinary(photoFile);
+      const photo = await fileUpload.uploadToS3(photoFile);
       updateData.photo = photo.url;
     }
     const course = await this.courseModel.findByIdAndUpdate(
@@ -287,15 +287,15 @@ export class CourseService {
     }
 
     if (videoFile) {
-      const videoUrl = await fileUpload.uploadToCloudinary(videoFile);
+      const videoUrl = await fileUpload.uploadToS3(videoFile);
       addLessonDto.video = videoUrl.url;
     }
     if (resourceFile) {
-      const resourceUrl = await fileUpload.uploadToCloudinary(resourceFile);
+      const resourceUrl = await fileUpload.uploadToS3(resourceFile);
       addLessonDto.resource = resourceUrl.url;
     }
     if (thumbnailFile) {
-      const thumbnailUrl = await fileUpload.uploadToCloudinary(thumbnailFile);
+      const thumbnailUrl = await fileUpload.uploadToS3(thumbnailFile);
       addLessonDto.thumbnail = thumbnailUrl.url;
     }
 
@@ -324,17 +324,13 @@ export class CourseService {
     const lesson = this.findLesson(course, lessonId);
     const updateData = { ...dto };
     if (videoFile) {
-      updateData.video = (await fileUpload.uploadToCloudinary(videoFile)).url;
+      updateData.video = (await fileUpload.uploadToS3(videoFile)).url;
     }
     if (resourceFile) {
-      updateData.resource = (
-        await fileUpload.uploadToCloudinary(resourceFile)
-      ).url;
+      updateData.resource = (await fileUpload.uploadToS3(resourceFile)).url;
     }
     if (thumbnailFile) {
-      updateData.thumbnail = (
-        await fileUpload.uploadToCloudinary(thumbnailFile)
-      ).url;
+      updateData.thumbnail = (await fileUpload.uploadToS3(thumbnailFile)).url;
     }
     Object.assign(lesson, updateData);
     await course.save();
@@ -507,7 +503,7 @@ export class CourseService {
     if (!lesson.assignmentTitle) {
       throw new HttpException('Assignment not found', HttpStatus.NOT_FOUND);
     }
-    const uploaded = await fileUpload.uploadToCloudinary(file);
+    const uploaded = await fileUpload.uploadToS3(file);
     return this.submissionModel.findOneAndUpdate(
       { userId, courseId, lessonId },
       { $set: { file: uploaded.url, status: 'submitted' } },

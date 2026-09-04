@@ -88,7 +88,7 @@ export class CertificateService {
     }
     const certificateData = { ...createCertificateDto };
     if (file) {
-      const certificateUrl = await fileUpload.uploadToCloudinary(file);
+      const certificateUrl = await fileUpload.uploadToS3(file);
       certificateData.certificateUrl = certificateUrl.url;
     }
     const certificate = await this.certificateModel.create({
@@ -258,7 +258,7 @@ export class CertificateService {
       throw new HttpException('Certificate not found', HttpStatus.NOT_FOUND);
     }
     if (file) {
-      const certificateurl = await fileUpload.uploadToCloudinary(file);
+      const certificateurl = await fileUpload.uploadToS3(file);
       updateCertificateDto.certificateUrl = certificateurl.url;
     }
     const result = await this.certificateModel.findByIdAndUpdate(
