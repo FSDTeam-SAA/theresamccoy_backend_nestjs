@@ -17,6 +17,8 @@ import { ApplicationFormModule } from './app/module/application/application-form
 import { BookkeeperModule } from './app/module/bookkeeper/bookkeeper.module';
 import { CertificateModule } from './app/module/certificate/certificate.module';
 import { MatchBookkeepersModule } from './app/module/match-bookkeepers/match-bookkeepers.module';
+import { RequestModule } from './app/module/request/request.module';
+import { MeetingScheduleModule } from './app/module/meeting-schedule/meeting-schedule.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { MatchBookkeepersModule } from './app/module/match-bookkeepers/match-boo
     BookkeeperModule,
     CertificateModule,
     MatchBookkeepersModule,
+    RequestModule,
+    MeetingScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
