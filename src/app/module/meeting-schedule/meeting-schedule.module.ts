@@ -8,7 +8,10 @@ import {
   Businesswoner,
   BusinesswonerSchema,
 } from '../businesswoner/entities/businesswoner.entity';
-import { RequestSchema } from '../request/entities/request.entity';
+import {
+  Request,
+  RequestSchema,
+} from '../request/entities/request.entity';
 import { User, UserSchema } from '../user/entities/user.entity';
 import {
   MeetingSchedule,
@@ -29,5 +32,6 @@ import { MeetingScheduleService } from './meeting-schedule.service';
   ],
   controllers: [MeetingScheduleController],
   providers: [MeetingScheduleService],
+  exports: [MeetingScheduleService],
 })
 export class MeetingScheduleModule {}

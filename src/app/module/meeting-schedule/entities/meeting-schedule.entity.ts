@@ -1,15 +1,30 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 export type MeetingScheduleDocument = HydratedDocument<MeetingSchedule>;
 
 @Schema({ timestamps: true })
 export class MeetingSchedule {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  bookkeeperId!: string;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Request',
+    required: true,
+  })
+  requestId!: Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  businessId!: string;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Bookkeeper',
+    required: true,
+  })
+  bookkeeperId!: Types.ObjectId;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Businesswoner',
+    required: true,
+  })
+  businessId!: Types.ObjectId;
 
   @Prop({ type: String, required: true })
   date!: string;
@@ -21,7 +36,14 @@ export class MeetingSchedule {
   meetingLink!: string;
 
   @Prop()
-  meetingNote!: string;
+  meetingNote?: string;
+
+  @Prop({
+    type: String,
+    enum: ['pending', 'scheduled', 'completed', 'cancelled'],
+    default: 'scheduled',
+  })
+  status!: string;
 }
 
 export const MeetingScheduleSchema =
