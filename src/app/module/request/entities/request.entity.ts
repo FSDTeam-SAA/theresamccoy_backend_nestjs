@@ -5,10 +5,18 @@ export type RequestDocument = HydratedDocument<Request>;
 
 @Schema({ timestamps: true })
 export class Request {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Bookkeeper',
+    required: true,
+  })
   bookkeeperId!: Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Businesswoner',
+    required: true,
+  })
   businessId!: Types.ObjectId;
 
   @Prop({
