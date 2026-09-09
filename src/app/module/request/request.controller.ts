@@ -20,6 +20,7 @@ export class RequestController {
   constructor(private readonly requestService: RequestService) {}
 
   @Get('/')
+  @UseGuards(AuthGuard('admin'))
   @ApiOperation({ summary: 'Get all requests' })
   @ApiQuery({
     name: 'searchTerm',
@@ -172,6 +173,7 @@ export class RequestController {
   }
 
   @Get('/:id')
+  @UseGuards(AuthGuard('admin'))
   @ApiOperation({ summary: 'Get a request by id' })
   @HttpCode(HttpStatus.OK)
   async getRequest(@Param('id') id: string) {

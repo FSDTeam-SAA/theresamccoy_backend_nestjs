@@ -8,10 +8,7 @@ import {
   Businesswoner,
   BusinesswonerSchema,
 } from '../businesswoner/entities/businesswoner.entity';
-import {
-  Request,
-  RequestSchema,
-} from '../request/entities/request.entity';
+import { Request, RequestSchema } from '../request/entities/request.entity';
 import { User, UserSchema } from '../user/entities/user.entity';
 import {
   MeetingSchedule,

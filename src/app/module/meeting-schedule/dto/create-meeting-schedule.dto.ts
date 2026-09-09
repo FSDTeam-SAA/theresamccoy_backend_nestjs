@@ -7,16 +7,6 @@ import {
 } from 'class-validator';
 
 export class CreateMeetingScheduleDto {
-  @ApiProperty({ example: '60d5f3e1f4f4b5d6a7e8b9c0', required: false })
-  @IsString()
-  @IsOptional()
-  bookkeeperId?: string;
-
-  @ApiProperty({ example: '60d5f3e1f4f4b5d6a7e8b9c1', required: false })
-  @IsString()
-  @IsOptional()
-  businessId?: string;
-
   @ApiProperty({ example: '2026-10-01' })
   @IsDateString()
   @IsNotEmpty()
@@ -36,13 +26,4 @@ export class CreateMeetingScheduleDto {
   @IsString()
   @IsOptional()
   meetingNote?: string;
-
-  @ApiProperty({
-    enum: ['pending', 'scheduled', 'completed', 'cancelled'],
-    default: 'scheduled',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  status?: string;
 }

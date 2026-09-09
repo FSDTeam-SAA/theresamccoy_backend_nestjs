@@ -103,7 +103,7 @@ export class MeetingScheduleController {
   @Get(':id')
   @ApiOperation({ summary: 'Get meeting schedule by id' })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('business', 'bookkeeper', 'admin'))
+  @UseGuards(AuthGuard('admin'))
   @HttpCode(HttpStatus.OK)
   async getMeetingScheduleById(@Param('id') id: string) {
     const result = await this.meetingScheduleService.getMeetingScheduleById(id);
@@ -148,7 +148,7 @@ export class MeetingScheduleController {
   @Patch(':id/status')
   @ApiOperation({ summary: 'Change meeting schedule status by id' })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('business', 'bookkeeper', 'admin'))
+  @UseGuards(AuthGuard('admin'))
   @HttpCode(HttpStatus.OK)
   async changeMeetingStatus(
     @Param('id') id: string,

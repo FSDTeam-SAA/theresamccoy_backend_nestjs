@@ -28,3 +28,11 @@ export class Request {
 }
 
 export const RequestSchema = SchemaFactory.createForClass(Request);
+
+RequestSchema.index(
+  { businessId: 1, bookkeeperId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: { $in: ['pending', 'accepted'] } },
+  },
+);

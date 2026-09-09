@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import buildWhereConditions from 'src/app/helpers/buildWhereConditions';
-import paginationHelper, { IOptions } from 'src/app/helpers/pagenation';
-import { IFilterParams } from 'src/app/helpers/pick';
+import buildWhereConditions from '../../helpers/buildWhereConditions';
+import paginationHelper, { IOptions } from '../../helpers/pagenation';
+import { IFilterParams } from '../../helpers/pick';
 import {
   Bookkeeper,
   BookkeeperDocument,
@@ -43,6 +43,13 @@ export class RequestService {
     if (!bookkeperUser) {
       throw new HttpException('Bookkeeper not found', HttpStatus.NOT_FOUND);
     }
+    const duplicate = await this.requestModel.exists({
+      businessId: businessWoner._id,
+      bookkeeperId: bookkeeper._id,
+      status: { $in: ['pending', 'accepted'] },
+    });
+    if (duplicate)
+      throw new HttpException('An active request already exists', 409);
     const request = await this.requestModel.create({
       bookkeeperId: bookkeeper._id,
       businessId: businessWoner._id,
@@ -175,45 +182,25 @@ export class RequestService {
     };
   }
 
-  async acceptRequest(requestId: string, bookkeeperId: string) {
-    const request = await this.requestModel.findById(requestId);
-    if (!request) {
-      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
-    }
-    const bookkeeper = await this.bookkeeperModel.findOne({
-      userId: bookkeeperId,
-    });
-    if (!bookkeeper) {
-      throw new HttpException('Bookkeeper not found', HttpStatus.NOT_FOUND);
-    }
-    const bookkeperUser = await this.userModel.findById(bookkeeper.userId);
-    if (!bookkeperUser) {
-      throw new HttpException('Bookkeeper not found', HttpStatus.NOT_FOUND);
-    }
-    request.bookkeeperId = bookkeeper._id;
-    request.status = 'accepted';
-    await request.save();
-    return request;
+  async acceptRequest(requestId: string, userId: string) {
+    return this.respond(requestId, userId, 'accepted');
   }
-
-  async rejectRequest(requestId: string, bookkeeperId: string) {
-    const request = await this.requestModel.findById(requestId);
-    if (!request) {
-      throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
-    }
-    const bookkeeper = await this.bookkeeperModel.findOne({
-      userId: bookkeeperId,
-    });
-    if (!bookkeeper) {
-      throw new HttpException('Bookkeeper not found', HttpStatus.NOT_FOUND);
-    }
-    const bookkeperUser = await this.userModel.findById(bookkeeper.userId);
-    if (!bookkeperUser) {
-      throw new HttpException('Bookkeeper not found', HttpStatus.NOT_FOUND);
-    }
-    request.bookkeeperId = bookkeeper._id;
-    request.status = 'rejected';
-    await request.save();
+  async rejectRequest(requestId: string, userId: string) {
+    return this.respond(requestId, userId, 'rejected');
+  }
+  private async respond(requestId: string, userId: string, status: string) {
+    const bookkeeper = await this.bookkeeperModel.findOne({ userId });
+    if (!bookkeeper) throw new HttpException('Bookkeeper not found', 404);
+    const request = await this.requestModel.findOneAndUpdate(
+      { _id: requestId, bookkeeperId: bookkeeper._id, status: 'pending' },
+      { $set: { status } },
+      { new: true, runValidators: true },
+    );
+    if (!request)
+      throw new HttpException(
+        'Only the assigned bookkeeper can respond to a pending request',
+        409,
+      );
     return request;
   }
 }

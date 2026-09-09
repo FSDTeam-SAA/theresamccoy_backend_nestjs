@@ -35,6 +35,9 @@ export class MeetingSchedule {
   @Prop({ type: String, required: true })
   meetingLink!: string;
 
+  @Prop({ type: Date })
+  completedAt?: Date;
+
   @Prop()
   meetingNote?: string;
 

@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import buildWhereConditions from 'src/app/helpers/buildWhereConditions';
-import paginationHelper, { IOptions } from 'src/app/helpers/pagenation';
-import { IFilterParams } from 'src/app/helpers/pick';
+import buildWhereConditions from '../../helpers/buildWhereConditions';
+import paginationHelper, { IOptions } from '../../helpers/pagenation';
+import { IFilterParams } from '../../helpers/pick';
 import {
   Bookkeeper,
   BookkeeperDocument,
@@ -41,9 +41,9 @@ export class MeetingScheduleService {
       throw new HttpException('Request not found', HttpStatus.NOT_FOUND);
     }
 
-    if (request.status === 'rejected') {
+    if (request.status !== 'accepted') {
       throw new HttpException(
-        'Cannot schedule a meeting for a rejected request',
+        'Only accepted requests can have a meeting',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -67,7 +67,7 @@ export class MeetingScheduleService {
       time: createMeetingScheduleDto.time,
       meetingLink: createMeetingScheduleDto.meetingLink,
       meetingNote: createMeetingScheduleDto.meetingNote,
-      status: createMeetingScheduleDto.status || 'scheduled',
+      status: 'scheduled',
     });
 
     return meetingSchedule;
@@ -224,9 +224,16 @@ export class MeetingScheduleService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const updatedSchedule = await this.meetingScheduleModel.findByIdAndUpdate(
-      meetingSchedule._id,
-      updateMeetingScheduleDto,
+    if (meetingSchedule.status !== 'scheduled')
+      throw new HttpException('Only scheduled meetings can be edited', 409);
+    const updatedSchedule = await this.meetingScheduleModel.findOneAndUpdate(
+      { _id: meetingSchedule._id, status: 'scheduled' },
+      {
+        date: updateMeetingScheduleDto.date,
+        time: updateMeetingScheduleDto.time,
+        meetingLink: updateMeetingScheduleDto.meetingLink,
+        meetingNote: updateMeetingScheduleDto.meetingNote,
+      },
       { new: true },
     );
     if (!updatedSchedule) {
@@ -246,9 +253,12 @@ export class MeetingScheduleService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const deletedSchedule = await this.meetingScheduleModel.findByIdAndDelete(
-      meetingSchedule._id,
-    );
+    if (meetingSchedule.status === 'completed')
+      throw new HttpException('Completed meetings cannot be deleted', 409);
+    const deletedSchedule = await this.meetingScheduleModel.findOneAndDelete({
+      _id: meetingSchedule._id,
+      status: { $ne: 'completed' },
+    });
     if (!deletedSchedule) {
       throw new HttpException(
         'Meeting schedule not found',
@@ -266,10 +276,20 @@ export class MeetingScheduleService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const updatedSchedule = await this.meetingScheduleModel.findByIdAndUpdate(
-      meetingSchedule._id,
-      { status },
-      { new: true },
+    if (!['completed', 'cancelled'].includes(status))
+      throw new HttpException('Invalid meeting transition', 400);
+    const request = await this.requestModel.findById(meetingSchedule.requestId);
+    if (request?.status !== 'accepted')
+      throw new HttpException('Request must be accepted', 400);
+    const updatedSchedule = await this.meetingScheduleModel.findOneAndUpdate(
+      { _id: meetingSchedule._id, status: 'scheduled' },
+      {
+        $set: {
+          status,
+          completedAt: status === 'completed' ? new Date() : null,
+        },
+      },
+      { new: true, runValidators: true },
     );
     if (!updatedSchedule) {
       throw new HttpException(

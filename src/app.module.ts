@@ -19,6 +19,7 @@ import { CertificateModule } from './app/module/certificate/certificate.module';
 import { MatchBookkeepersModule } from './app/module/match-bookkeepers/match-bookkeepers.module';
 import { RequestModule } from './app/module/request/request.module';
 import { MeetingScheduleModule } from './app/module/meeting-schedule/meeting-schedule.module';
+import { EngagementModule } from './app/module/engagement/engagement.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { MeetingScheduleModule } from './app/module/meeting-schedule/meeting-sch
     MatchBookkeepersModule,
     RequestModule,
     MeetingScheduleModule,
+    EngagementModule,
   ],
   controllers: [AppController],
   providers: [AppService],
