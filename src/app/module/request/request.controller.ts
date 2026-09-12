@@ -22,6 +22,8 @@ export class RequestController {
   @Get('/')
   @UseGuards(AuthGuard('admin'))
   @ApiOperation({ summary: 'Get all requests' })
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('admin'))
   @ApiQuery({
     name: 'searchTerm',
     type: 'string',

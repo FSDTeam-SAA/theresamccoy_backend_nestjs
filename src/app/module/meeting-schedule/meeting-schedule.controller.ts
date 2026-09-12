@@ -21,6 +21,7 @@ import type { Request } from 'express';
 import pick from 'src/app/helpers/pick';
 import AuthGuard from 'src/app/middlewares/auth.guard';
 import { CreateMeetingScheduleDto } from './dto/create-meeting-schedule.dto';
+import { ChangeMeetingStatusDto } from './dto/change-meeting-status.dto';
 import { MeetingScheduleService } from './meeting-schedule.service';
 
 @ApiTags('meeting-schedule')
@@ -146,17 +147,21 @@ export class MeetingScheduleController {
   }
 
   @Patch(':id/status')
-  @ApiOperation({ summary: 'Change meeting schedule status by id' })
+  @ApiOperation({
+    summary: 'Change meeting status (Admin or meeting participant)',
+  })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('admin'))
+  @UseGuards(AuthGuard('admin', 'business', 'bookkeeper'))
   @HttpCode(HttpStatus.OK)
   async changeMeetingStatus(
     @Param('id') id: string,
-    @Body('status') status: string,
+    @Body() dto: ChangeMeetingStatusDto,
+    @Req() req: Request,
   ) {
     const result = await this.meetingScheduleService.changeMeetingStatus(
       id,
-      status,
+      dto.status,
+      req.user!,
     );
     return {
       message: 'Meeting schedule status changed successfully',

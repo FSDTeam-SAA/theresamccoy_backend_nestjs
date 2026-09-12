@@ -4,6 +4,7 @@ import mongoose, { Model } from 'mongoose';
 import buildWhereConditions from '../../helpers/buildWhereConditions';
 import paginationHelper, { IOptions } from '../../helpers/pagenation';
 import { IFilterParams } from '../../helpers/pick';
+import type { JwtPayload } from '../../middlewares/auth.guard';
 import {
   Bookkeeper,
   BookkeeperDocument,
@@ -268,7 +269,14 @@ export class MeetingScheduleService {
     return deletedSchedule;
   }
 
-  async changeMeetingStatus(id: string, status: string) {
+  async changeMeetingStatus(
+    id: string,
+    status: string,
+    user: Pick<JwtPayload, 'id' | 'role'>,
+  ) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new HttpException('Invalid ID format', HttpStatus.BAD_REQUEST);
+    }
     const meetingSchedule = await this.meetingScheduleModel.findById(id);
     if (!meetingSchedule) {
       throw new HttpException(
@@ -276,11 +284,35 @@ export class MeetingScheduleService {
         HttpStatus.NOT_FOUND,
       );
     }
+    if (user.role !== 'admin') {
+      const profile =
+        user.role === 'business'
+          ? await this.businesswonerModel.findOne({ userId: user.id })
+          : user.role === 'bookkeeper'
+            ? await this.bookkeeperModel.findOne({ userId: user.id })
+            : null;
+      const participantId =
+        user.role === 'business'
+          ? meetingSchedule.businessId
+          : meetingSchedule.bookkeeperId;
+      if (!profile || String(profile._id) !== String(participantId)) {
+        throw new HttpException(
+          'You can only change the status of your own meetings',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    }
     if (!['completed', 'cancelled'].includes(status))
       throw new HttpException('Invalid meeting transition', 400);
     const request = await this.requestModel.findById(meetingSchedule.requestId);
     if (request?.status !== 'accepted')
       throw new HttpException('Request must be accepted', 400);
+    if (meetingSchedule.status !== 'scheduled') {
+      throw new HttpException(
+        'Only scheduled meetings can change status',
+        HttpStatus.CONFLICT,
+      );
+    }
     const updatedSchedule = await this.meetingScheduleModel.findOneAndUpdate(
       { _id: meetingSchedule._id, status: 'scheduled' },
       {
@@ -293,8 +325,8 @@ export class MeetingScheduleService {
     );
     if (!updatedSchedule) {
       throw new HttpException(
-        'Meeting schedule not found',
-        HttpStatus.NOT_FOUND,
+        'Meeting status has changed; refresh and try again',
+        HttpStatus.CONFLICT,
       );
     }
     return updatedSchedule;
