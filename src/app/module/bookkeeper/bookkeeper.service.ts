@@ -17,6 +17,7 @@ import {
 } from './dto/create-bookkeeper.dto';
 
 import { UpdateBookkeeperDto } from './dto/update-bookkeeper.dto';
+import { UpdateMyBookkeeperProfileDto } from './dto/bookkeeper-profile.dto';
 
 import { fileUpload } from 'src/app/helpers/fileUploder';
 import { Bookkeeper, BookkeeperDocument } from './entities/bookkeeper.entity';
@@ -216,6 +217,123 @@ export class BookkeeperService {
     }
 
     return bookkeeper;
+  }
+
+  async getMyProfile(userId: string) {
+    const bookkeeper = await this.bookkeeperModel
+      .findOne({ userId })
+      .populate(
+        'userId',
+        'firstName lastName email phoneNumber profilePicture',
+      );
+
+    if (!bookkeeper) {
+      throw new HttpException(
+        'Bookkeeper profile not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return bookkeeper;
+  }
+
+  async updateMyProfile(
+    userId: string,
+    dto: UpdateMyBookkeeperProfileDto,
+    files?: {
+      profilePicture?: Express.Multer.File[];
+      portfolioFiles?: Express.Multer.File[];
+    },
+  ) {
+    const bookkeeper = await this.bookkeeperModel.findOne({ userId });
+    if (!bookkeeper) {
+      throw new HttpException(
+        'Bookkeeper profile not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const updateData: Record<string, unknown> = { ...dto };
+    delete updateData.profilePicture;
+    delete updateData.portfolioFiles;
+
+    const profilePicture = files?.profilePicture?.[0];
+    if (profilePicture) {
+      if (!profilePicture.mimetype.startsWith('image/')) {
+        throw new HttpException(
+          'Profile picture must be an image',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      updateData.profilePicture = (
+        await fileUpload.uploadToS3(profilePicture)
+      ).url;
+    }
+
+    const uploadedFiles = files?.portfolioFiles ?? [];
+    if (uploadedFiles.length && !dto.portfolio) {
+      throw new HttpException(
+        'Portfolio JSON is required when portfolio files are uploaded',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (dto.portfolio) {
+      if (uploadedFiles.length > dto.portfolio.length) {
+        throw new HttpException(
+          'Each portfolio file must have a matching portfolio item',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      if (uploadedFiles.some((file) => file.mimetype !== 'application/pdf')) {
+        throw new HttpException(
+          'Portfolio files must be PDF documents',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      updateData.portfolio = await Promise.all(
+        dto.portfolio.map(async (item, index) => ({
+          ...item,
+          fileUrl: uploadedFiles[index]
+            ? (await fileUpload.uploadToS3(uploadedFiles[index])).url
+            : item.fileUrl,
+        })),
+      );
+    }
+
+    const updated = await this.bookkeeperModel.findOneAndUpdate(
+      { _id: bookkeeper._id, userId },
+      { $set: updateData },
+      { new: true, runValidators: true },
+    );
+
+    const userFields = [
+      'firstName',
+      'lastName',
+      'email',
+      'phoneNumber',
+    ] as const;
+    const userUpdate: Record<string, unknown> = Object.fromEntries(
+      userFields
+        .filter((field) => dto[field] !== undefined)
+        .map((field) => [field, dto[field]]),
+    );
+    if (updateData.profilePicture) {
+      userUpdate.profilePicture = updateData.profilePicture;
+    }
+    if (Object.keys(userUpdate).length) {
+      await this.userModel.findByIdAndUpdate(
+        userId,
+        { $set: userUpdate },
+        {
+          runValidators: true,
+        },
+      );
+    }
+
+    return updated?.populate(
+      'userId',
+      'firstName lastName email phoneNumber profilePicture',
+    );
   }
 
   // Update - সব section এক method দিয়ে

@@ -3,6 +3,40 @@ import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 export type BookkeeperDocument = HydratedDocument<Bookkeeper>;
 
+@Schema({ _id: true, versionKey: false })
+export class BookkeeperCertification {
+  @Prop({ required: true, trim: true })
+  title!: string;
+
+  @Prop({ trim: true })
+  issuer?: string;
+
+  @Prop({ min: 1900, max: 2200 })
+  year?: number;
+}
+
+export const BookkeeperCertificationSchema = SchemaFactory.createForClass(
+  BookkeeperCertification,
+);
+
+@Schema({ _id: true, versionKey: false })
+export class BookkeeperPortfolio {
+  @Prop({ required: true, trim: true })
+  title!: string;
+
+  @Prop({ trim: true })
+  description?: string;
+
+  @Prop({ trim: true })
+  department?: string;
+
+  @Prop({ trim: true })
+  fileUrl?: string;
+}
+
+export const BookkeeperPortfolioSchema =
+  SchemaFactory.createForClass(BookkeeperPortfolio);
+
 @Schema({ timestamps: true })
 export class Bookkeeper {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
@@ -31,6 +65,39 @@ export class Bookkeeper {
 
   @Prop()
   linkedInProfile!: string;
+
+  @Prop({ trim: true })
+  profilePicture?: string;
+
+  @Prop({ trim: true })
+  professionalTitle?: string;
+
+  @Prop({ trim: true, maxlength: 2000 })
+  professionalBio?: string;
+
+  @Prop({ type: [String], default: [] })
+  languages!: string[];
+
+  @Prop({ type: [String], default: [] })
+  skills!: string[];
+
+  @Prop({ type: [BookkeeperCertificationSchema], default: [] })
+  certifications!: BookkeeperCertification[];
+
+  @Prop({ type: [BookkeeperPortfolioSchema], default: [] })
+  portfolio!: BookkeeperPortfolio[];
+
+  @Prop({ min: 0 })
+  hourlyRate?: number;
+
+  @Prop({ min: 0 })
+  projectsCompleted?: number;
+
+  @Prop({ min: 0 })
+  yearsOfExperience?: number;
+
+  @Prop({ trim: true })
+  availability?: string;
 
   // exprience
   @Prop()
@@ -119,3 +186,5 @@ export class Bookkeeper {
 }
 
 export const BookkeeperSchema = SchemaFactory.createForClass(Bookkeeper);
+
+BookkeeperSchema.index({ userId: 1 }, { unique: true });

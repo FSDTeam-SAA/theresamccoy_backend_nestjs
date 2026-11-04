@@ -16,9 +16,11 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
   ApiOperation,
   ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import pick from 'src/app/helpers/pick';
@@ -33,7 +35,9 @@ import {
   CreateExperienceDto,
 } from './dto/create-bookkeeper.dto';
 import { UpdateBookkeeperDto } from './dto/update-bookkeeper.dto';
+import { UpdateMyBookkeeperProfileDto } from './dto/bookkeeper-profile.dto';
 
+@ApiTags('Bookkeeper')
 @Controller('bookkeeper')
 export class BookkeeperController {
   constructor(private readonly bookkeeperService: BookkeeperService) {}
@@ -226,6 +230,60 @@ export class BookkeeperController {
       message: 'Bookkeepers retrieved successfully',
       meta: result.meta,
       data: result.data,
+    };
+  }
+
+  @Get('profile/me')
+  @ApiOperation({
+    summary: 'Get the authenticated bookkeeper Profile & Skills page data',
+  })
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('bookkeeper'))
+  @HttpCode(HttpStatus.OK)
+  async getMyProfile(@Req() req: Request) {
+    const result = await this.bookkeeperService.getMyProfile(req.user!.id);
+    return {
+      message: 'Bookkeeper profile retrieved successfully',
+      data: result,
+    };
+  }
+
+  @Patch('profile/me')
+  @ApiOperation({
+    summary:
+      'Update personal information, skills, certifications, portfolio and other profile details',
+  })
+  @ApiBearerAuth('access-token')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateMyBookkeeperProfileDto })
+  @UseGuards(AuthGuard('bookkeeper'))
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'profilePicture', maxCount: 1 },
+        { name: 'portfolioFiles', maxCount: 10 },
+      ],
+      fileUpload.uploadConfig,
+    ),
+  )
+  @HttpCode(HttpStatus.OK)
+  async updateMyProfile(
+    @Req() req: Request,
+    @Body() dto: UpdateMyBookkeeperProfileDto,
+    @UploadedFiles()
+    files?: {
+      profilePicture?: Express.Multer.File[];
+      portfolioFiles?: Express.Multer.File[];
+    },
+  ) {
+    const result = await this.bookkeeperService.updateMyProfile(
+      req.user!.id,
+      dto,
+      files,
+    );
+    return {
+      message: 'Bookkeeper profile updated successfully',
+      data: result,
     };
   }
 
