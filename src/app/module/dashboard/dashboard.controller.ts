@@ -7,9 +7,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
-import { ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import AuthGuard from 'src/app/middlewares/auth.guard';
 
+@ApiTags('Admin Dashboard')
 @Controller('dashboard')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}

@@ -313,4 +313,19 @@ export class EngagementService {
       .sort({ _id: -1 })
       .limit(50);
   }
+
+  async complete(id: string, actor: JwtPayload) {
+    const engagement = await this.findOne(id, actor);
+    if (engagement.status !== 'active')
+      throw new ConflictException('Only active engagements can be completed');
+    if (actor.role !== 'admin' && String(engagement.businessId) !== actor.id)
+      throw new ForbiddenException();
+    const result = await this.engagements.findOneAndUpdate(
+      { _id: id, status: 'active' },
+      { $set: { status: 'completed', completedAt: new Date() } },
+      { new: true },
+    );
+    if (!result) throw new ConflictException('Engagement status changed');
+    return result;
+  }
 }

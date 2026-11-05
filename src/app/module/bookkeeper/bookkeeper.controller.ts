@@ -36,6 +36,7 @@ import {
 } from './dto/create-bookkeeper.dto';
 import { UpdateBookkeeperDto } from './dto/update-bookkeeper.dto';
 import { UpdateMyBookkeeperProfileDto } from './dto/bookkeeper-profile.dto';
+import { ReviewBookkeeperDto } from './dto/review-bookkeeper.dto';
 
 @ApiTags('Bookkeeper')
 @Controller('bookkeeper')
@@ -245,6 +246,26 @@ export class BookkeeperController {
     return {
       message: 'Bookkeeper profile retrieved successfully',
       data: result,
+    };
+  }
+
+  @Patch(':id/review')
+  @ApiOperation({ summary: 'Admin approves or rejects a bookkeeper profile' })
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('admin'))
+  async reviewBookkeeper(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Body() dto: ReviewBookkeeperDto,
+  ) {
+    return {
+      message: 'Bookkeeper review saved successfully',
+      data: await this.bookkeeperService.reviewBookkeeper(
+        id,
+        req.user!.id,
+        dto.status,
+        dto.rejectionReason,
+      ),
     };
   }
 

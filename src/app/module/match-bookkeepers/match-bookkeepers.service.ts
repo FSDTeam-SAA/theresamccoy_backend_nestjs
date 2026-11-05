@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import {
   Bookkeeper,
   BookkeeperDocument,
+  BookkeeperStatus,
 } from '../bookkeeper/entities/bookkeeper.entity';
 import {
   Businesswoner,
@@ -55,7 +56,7 @@ export class MatchBookkeepersService {
       : {};
 
     const bookkeepers = await this.bookkeeperModel
-      .find(search)
+      .find({ $and: [{ status: BookkeeperStatus.APPROVED }, search] })
       .populate('userId', 'profilePicture')
       .lean();
 

@@ -106,6 +106,31 @@ export class BusinesswonerController {
     };
   }
 
+  @Get('profile/me')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('business'))
+  @ApiOperation({ summary: 'Get the authenticated business owner profile' })
+  async getMyProfile(@Req() req: Request) {
+    return {
+      message: 'Business profile retrieved successfully',
+      data: await this.businesswonerService.getMyProfile(req.user!.id),
+    };
+  }
+
+  @Patch('profile/me')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('business'))
+  @ApiOperation({ summary: 'Update the authenticated business owner profile' })
+  async updateMyProfile(
+    @Req() req: Request,
+    @Body() dto: UpdateBusinesswonerDto,
+  ) {
+    return {
+      message: 'Business profile updated successfully',
+      data: await this.businesswonerService.updateMyProfile(req.user!.id, dto),
+    };
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get businesswoner by id' })
   @HttpCode(HttpStatus.OK)

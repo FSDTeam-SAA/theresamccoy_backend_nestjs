@@ -3,13 +3,14 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Req,
   SetMetadata,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import AuthGuard from '../../middlewares/auth.guard';
 import {
@@ -76,5 +77,13 @@ export class EngagementController {
     @Query('before') before?: string,
   ) {
     return this.service.listMessages(id, req.user!, before);
+  }
+
+  @Patch(':id/complete')
+  @ApiOperation({
+    summary: 'Business owner or admin completes an active engagement',
+  })
+  complete(@Param('id') id: string, @Req() req: Request) {
+    return this.service.complete(id, req.user!);
   }
 }

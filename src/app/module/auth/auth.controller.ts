@@ -18,9 +18,10 @@ import {
   VerifyEmailDto,
 } from './dto/create-auth.dto';
 import type { Request, Response } from 'express';
-import { ApiBearerAuth, ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import AuthGuard from 'src/app/middlewares/auth.guard';
 
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -48,6 +49,26 @@ export class AuthController {
       message: 'User logged in successfully',
       data: result,
     };
+  }
+
+  @Post('refresh')
+  @ApiOperation({
+    summary: 'Create a new access token from the refresh cookie',
+  })
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Req() req: Request) {
+    return {
+      message: 'Access token refreshed successfully',
+      data: await this.authService.refresh(req.cookies?.refreshToken),
+    };
+  }
+
+  @Post('logout')
+  @ApiOperation({ summary: 'Clear the refresh-token session cookie' })
+  @HttpCode(HttpStatus.OK)
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'strict' });
+    return { message: 'Logged out successfully' };
   }
 
   @Post('forgot-password')
@@ -94,7 +115,7 @@ export class AuthController {
   }
 
   @Post('change-password')
-  @UseGuards(AuthGuard('user', 'admin'))
+  @UseGuards(AuthGuard('bookkeeper', 'business', 'admin'))
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Change password for logged in user' })
   @ApiBody({ type: ChangePasswordDto })
@@ -103,7 +124,6 @@ export class AuthController {
     @Body() CreateAuthDto: ChangePasswordDto,
     @Req() req: Request,
   ) {
-    console.log(req.user!.id);
     const result = await this.authService.changePassword(
       req.user!.id,
       CreateAuthDto.oldPassword,
