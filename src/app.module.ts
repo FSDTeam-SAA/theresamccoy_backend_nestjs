@@ -20,6 +20,7 @@ import { MatchBookkeepersModule } from './app/module/match-bookkeepers/match-boo
 import { RequestModule } from './app/module/request/request.module';
 import { MeetingScheduleModule } from './app/module/meeting-schedule/meeting-schedule.module';
 import { EngagementModule } from './app/module/engagement/engagement.module';
+import { ReviewModule } from './app/module/review/review.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { EngagementModule } from './app/module/engagement/engagement.module';
     RequestModule,
     MeetingScheduleModule,
     EngagementModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],

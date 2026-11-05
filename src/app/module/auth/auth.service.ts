@@ -64,6 +64,31 @@ export class AuthService {
     return { accessToken, user };
   }
 
+  async refresh(refreshToken: string | undefined) {
+    if (!refreshToken)
+      throw new HttpException('Refresh token is required', 401);
+    let payload: { id: string };
+    try {
+      payload = this.jwtService.verify(refreshToken, {
+        secret: config.jwt.refreshTokenSecret,
+      });
+    } catch {
+      throw new HttpException('Invalid or expired refresh token', 401);
+    }
+    const user = await this.userModel.findById(payload.id);
+    if (!user || user.status === 'suspended')
+      throw new HttpException('User is unavailable', 401);
+    return {
+      accessToken: this.jwtService.sign(
+        { id: user._id, email: user.email, role: user.role },
+        {
+          secret: config.jwt.accessTokenSecret,
+          expiresIn: config.jwt.accessTokenExpires as any,
+        } as jwt.JwtSignOptions,
+      ),
+    };
+  }
+
   async forgotPassword(email: string) {
     const user = await this.userModel.findOne({ email });
     if (!user) throw new HttpException('Email not found', 404);

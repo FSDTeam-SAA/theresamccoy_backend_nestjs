@@ -20,7 +20,11 @@ import { UpdateBookkeeperDto } from './dto/update-bookkeeper.dto';
 import { UpdateMyBookkeeperProfileDto } from './dto/bookkeeper-profile.dto';
 
 import { fileUpload } from 'src/app/helpers/fileUploder';
-import { Bookkeeper, BookkeeperDocument } from './entities/bookkeeper.entity';
+import {
+  Bookkeeper,
+  BookkeeperDocument,
+  BookkeeperStatus,
+} from './entities/bookkeeper.entity';
 
 @Injectable()
 export class BookkeeperService {
@@ -217,6 +221,38 @@ export class BookkeeperService {
     }
 
     return bookkeeper;
+  }
+
+  async reviewBookkeeper(
+    id: string,
+    adminId: string,
+    status: BookkeeperStatus,
+    rejectionReason?: string,
+  ) {
+    if (status === BookkeeperStatus.REJECTED && !rejectionReason?.trim()) {
+      throw new HttpException(
+        'Rejection reason is required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const result = await this.bookkeeperModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          status,
+          reviewedBy: adminId,
+          reviewedAt: new Date(),
+          rejectionReason:
+            status === BookkeeperStatus.REJECTED
+              ? rejectionReason?.trim()
+              : undefined,
+        },
+      },
+      { new: true, runValidators: true },
+    );
+    if (!result)
+      throw new HttpException('Bookkeeper not found', HttpStatus.NOT_FOUND);
+    return result;
   }
 
   async getMyProfile(userId: string) {

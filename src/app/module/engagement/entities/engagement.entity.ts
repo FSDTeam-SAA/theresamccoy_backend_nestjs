@@ -42,7 +42,14 @@ export class Engagement {
 
   @Prop({
     default: 'contacted',
-    enum: ['contacted', 'bookkeeper_signed', 'awaiting_payment', 'active'],
+    enum: [
+      'contacted',
+      'bookkeeper_signed',
+      'awaiting_payment',
+      'active',
+      'completed',
+      'cancelled',
+    ],
   })
   status!: string;
 
@@ -75,6 +82,9 @@ export class Engagement {
 
   @Prop({ unique: true, sparse: true })
   stripePaymentIntentId?: string;
+
+  @Prop({ type: Date })
+  completedAt?: Date;
 }
 export const EngagementSchema = SchemaFactory.createForClass(Engagement);
 @Schema({ timestamps: true })

@@ -78,6 +78,30 @@ export class BusinesswonerService {
     return result;
   }
 
+  async getMyProfile(userId: string) {
+    const result = await this.businesswonerModel.findOne({ userId });
+    if (!result)
+      throw new HttpException(
+        'Businesswoner profile not found',
+        HttpStatus.NOT_FOUND,
+      );
+    return result;
+  }
+
+  async updateMyProfile(userId: string, dto: UpdateBusinesswonerDto) {
+    const result = await this.businesswonerModel.findOneAndUpdate(
+      { userId },
+      { $set: dto },
+      { new: true, runValidators: true },
+    );
+    if (!result)
+      throw new HttpException(
+        'Businesswoner profile not found',
+        HttpStatus.NOT_FOUND,
+      );
+    return result;
+  }
+
   async approveBusinesswoner(id: string, adminId: string) {
     const result = await this.businesswonerModel.findByIdAndUpdate(
       id,

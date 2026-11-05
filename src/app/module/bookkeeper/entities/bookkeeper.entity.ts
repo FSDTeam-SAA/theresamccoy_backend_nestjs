@@ -3,6 +3,12 @@ import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 export type BookkeeperDocument = HydratedDocument<Bookkeeper>;
 
+export enum BookkeeperStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+}
+
 @Schema({ _id: true, versionKey: false })
 export class BookkeeperCertification {
   @Prop({ required: true, trim: true })
@@ -41,6 +47,22 @@ export const BookkeeperPortfolioSchema =
 export class Bookkeeper {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   userId!: Types.ObjectId;
+
+  @Prop({
+    enum: BookkeeperStatus,
+    default: BookkeeperStatus.PENDING,
+    index: true,
+  })
+  status!: BookkeeperStatus;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  reviewedBy?: Types.ObjectId;
+
+  @Prop({ type: Date })
+  reviewedAt?: Date;
+
+  @Prop({ trim: true, maxlength: 1000 })
+  rejectionReason?: string;
 
   @Prop()
   firstName!: string;
