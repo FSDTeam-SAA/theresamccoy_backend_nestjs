@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import { Test } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
@@ -42,14 +43,14 @@ describe('isolated MongoDB API workflows', () => {
     }).compile();
     app = module.createNestApplication({ logger: false });
     app.setGlobalPrefix('api/v1', { exclude: [''] });
+    app.use(cookieParser());
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, transform: true }),
     );
     app.useGlobalInterceptors(new UtilsInterceptor());
     app.useGlobalFilters(new GlobalExceptionFilter(app.get(HttpAdapterHost)));
-    const { createApiDocument } = require('../src/app/swagger/document');
-    const { SwaggerModule } = require('@nestjs/swagger');
-    SwaggerModule.setup('api/docs', app, createApiDocument(app));
+    const { setupApiDocumentation } = require('../src/app/swagger/document');
+    setupApiDocumentation(app);
     await app.init();
     connection = app.get(getConnectionToken());
     await Promise.all(
@@ -91,6 +92,44 @@ describe('isolated MongoDB API workflows', () => {
   afterAll(async () => {
     if (app) await app.close();
     if (mongo) await mongo.stop();
+  });
+
+  it('keeps refresh in an HttpOnly cookie and renews access without login', async () => {
+    const session = request.agent(app.getHttpServer());
+    const login = await session
+      .post('/api/v1/auth/login')
+      .send({ email: 'bookkeeper@example.com', password: 'Integration123!' })
+      .expect(200);
+    expect(login.body.data.refreshToken).toBeUndefined();
+    const cookies = login.headers['set-cookie'] as unknown as string[];
+    const refreshCookie = cookies.find((cookie) =>
+      cookie.startsWith('refreshToken='),
+    );
+    expect(refreshCookie).toContain('HttpOnly');
+    expect(refreshCookie).toContain('Max-Age=');
+    expect(refreshCookie).toContain('SameSite=Lax');
+    const { JwtService } = require('@nestjs/jwt');
+    const expired = new JwtService().sign(
+      { id: bookkeeperId, role: 'bookkeeper', tokenVersion: 0 },
+      { secret: process.env.ACCESS_TOKEN_SECRET, expiresIn: -1 },
+    );
+    await session
+      .get('/api/v1/user/profile')
+      .set('Authorization', auth(expired))
+      .expect(401);
+    const refreshed = await session.post('/api/v1/auth/refresh').expect(200);
+    expect(typeof refreshed.body.data.accessToken).toBe('string');
+    await session
+      .get('/api/v1/user/profile')
+      .set('Authorization', auth(refreshed.body.data.accessToken))
+      .expect(200);
+    const logout = await session.post('/api/v1/auth/logout').expect(200);
+    expect(String(logout.headers['set-cookie'])).toContain('refreshToken=;');
+    await session.post('/api/v1/auth/refresh').expect(401);
+    await api()
+      .post('/api/v1/auth/refresh')
+      .set('Cookie', 'refreshToken=invalid-token')
+      .expect(401);
   });
 
   it('persists CMS content and keeps unpublished pages private', async () => {
@@ -373,9 +412,17 @@ describe('isolated MongoDB API workflows', () => {
       .expect(400);
   });
 
-  it('serves an importable Swagger contract with multipart fields, responses and valid references', async () => {
+  it('serves an importable Swagger contract with multipart fields and valid references', async () => {
+    const initScript = await api()
+      .get('/api/docs/swagger-ui-init.js')
+      .expect(200);
+    expect(initScript.text).toContain('swaggerRequestInterceptor');
+    expect(initScript.text).toContain('swaggerResponseInterceptor');
     const response = await api().get('/api/docs-json').expect(200);
     const spec = response.body;
+    expect(Object.keys(spec.components.securitySchemes)).toEqual([
+      'access-token',
+    ]);
     const multipart =
       spec.paths['/api/v1/bookkeeper/profile/me'].patch.requestBody.content[
         'multipart/form-data'
@@ -412,10 +459,8 @@ describe('isolated MongoDB API workflows', () => {
           /^2\d\d$/.test(key),
         );
         expect(success).toBeDefined();
-        expect(
-          operation.responses[success!].content['application/json'].schema
-            .properties.data,
-        ).toBeDefined();
+        expect(operation.responses[success!].content).toBeUndefined();
+        expect(operation.responses['401']).toBeUndefined();
       }
     }
     if (process.env.EXPORT_OPENAPI === '1')

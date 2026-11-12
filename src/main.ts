@@ -1,9 +1,8 @@
-import { createApiDocument } from './app/swagger/document';
+import { setupApiDocumentation } from './app/swagger/document';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
-import { SwaggerModule } from '@nestjs/swagger';
 import dotenv from 'dotenv';
 import { UtilsInterceptor } from './app/utils/utils.interceptor';
 import { GlobalExceptionFilter } from './app/middlewares/globalErrors.filter';
@@ -41,10 +40,7 @@ async function bootstrap() {
   const httpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new GlobalExceptionFilter(httpAdapterHost));
 
-  const document = createApiDocument(app);
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: { persistAuthorization: true },
-  });
+  setupApiDocumentation(app);
 
   await app.listen(config.port, () => {
     console.log(`Server is running on http://localhost:${config.port}`);

@@ -1,3 +1,4 @@
+import { refreshCookieOptions } from './refresh-cookie';
 import {
   Body,
   Controller,
@@ -53,7 +54,10 @@ export class AuthController {
 
   @Post('refresh')
   @ApiOperation({
-    summary: 'Create a new access token from the refresh cookie',
+    summary:
+      'Refresh access token using the login cookie (no token input required)',
+    description:
+      'Login sets an HttpOnly refreshToken cookie. Browsers and Postman send it automatically. Frontend requests must include credentials. This endpoint does not need a valid access token.',
   })
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() req: Request) {
@@ -67,7 +71,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Clear the refresh-token session cookie' })
   @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'strict' });
+    res.clearCookie('refreshToken', refreshCookieOptions());
     return { message: 'Logged out successfully' };
   }
 

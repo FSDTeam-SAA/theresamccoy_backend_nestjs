@@ -58,3 +58,9 @@ Added application PDF resume/cover letter/certification upload, specialization a
 The shared Swagger factory now documents standard JSON success/error envelopes, authentication, request fields, bookkeeper profile response and multipart JSON text. Contract tests validate references and the live /api/docs-json route. [OpenAPI JSON](openapi.json) is generated from the same factory; [bookkeeper integration guide](bookkeeper-integration.bn.md) maps every screen and request. Some flexible/non-bookkeeper response data remains generic and is called out in the guide.
 
 Application prerequisite duration is an estimate, not a proctored exam timer; scores are admin-reviewed, while LMS quizzes are auto-scored. Paid-course checkout/adaptive tier policy is still separate work. Existing production data and external accounts were not mutated.
+
+## Swagger authentication follow-up
+
+Per user request, generic success/error response examples were removed from Swagger. Runtime response envelopes are unchanged. Swagger now auto-authorizes successful login responses and renews expired access tokens using the HttpOnly refresh cookie. Refresh cookie expiry follows the refresh JWT; shared cookie attributes are used for logout. The frontend client must still send credentials and implement its own refresh/retry interceptor. See [authentication guide](auth-refresh.bn.md).
+
+Verification: build, 39 unit/regression tests, 8 HTTP tests and 12 isolated MongoDB tests passed (59 total). Coverage includes cookie persistence, expired access token renewal without login, logout, invalid refresh tokens, serialized Swagger interceptors and concurrent refresh coalescing.

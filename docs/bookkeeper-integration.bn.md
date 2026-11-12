@@ -1,10 +1,12 @@
+Refresh/login-এর আপডেট: [cookie ও automatic refresh guide](auth-refresh.bn.md)।
+
 # Bookkeeper frontend handoff — Figma অনুযায়ী
 
 Frontend developer প্রথমে এই guide এবং [OpenAPI JSON](openapi.json) নেবেন। Running backend-এ **`/api/docs`**-এ Swagger Try it out; **`/api/docs-json`**-এ importable OpenAPI। Postman-এ JSON file বা URL import করুন। Route inventory [এখানে](api-reference.md)। এই guide bookkeeper screen-এর field mapping দেয়; পুরনো generic README-এর বদলে current Swagger contract ব্যবহার করুন।
 
 ## Authentication ও ID
 
-Base: `http://localhost:3000/api/v1` অথবা deployed backend-এর `/api/v1`। Bookkeeper register করে login করুন; `data.accessToken` দিয়ে `Authorization: Bearer <token>` দিন। Swagger Authorize-এ শুধু token দিন।
+Base: `http://localhost:3000/api/v1` অথবা deployed backend-এর `/api/v1`। Bookkeeper register করে login করুন; `data.accessToken` দিয়ে `Authorization: Bearer <token>` দিন। Swagger-এ login Execute করলে access token স্বয়ংক্রিয়ভাবে Authorize হয়। Access token expire হলে Swagger cookie দিয়ে refresh করে; refresh token আলাদা করে copy/paste করতে হবে না।
 
 `GET /user/profile`-এর `_id` account/User ID। `POST /bookkeeper`-এর `_id` bookkeeper profile ID। Profile, request এবং certificate-এর bookkeeperId profile ID; engagement participant/review-এর ID User ID।
 
@@ -113,7 +115,7 @@ Contract bookkeeper আগে sign করে; business পরে। Payment webh
 
 Reviews create: `{"engagementId":"actual-id","rating":5,"comment":"Great collaboration"}`। Only completed engagement-এর participants; দ্বিতীয় review 409। Received reviews `GET /reviews/me`; summary `meta`-তে।
 
-শেষ verification: build, targeted ESLint এবং মোট ৫০টি test পাস (৩১ unit, ৮ HTTP, ১১ MongoDB integration)।
+Token-refresh follow-up: মোট ৫৯টি test পাস (৩৯ unit, ৮ HTTP, ১২ MongoDB integration)।
 
 ## Swagger / testing / handoff
 
@@ -123,6 +125,6 @@ Reviews create: `{"engagementId":"actual-id","rating":5,"comment":"Great collabo
 - `npm run docs:openapi`: isolated app থেকে current Swagger JSON export এবং contract validation।
 - `npm run docs:api`: route inventory/Postman route collection regenerate।
 
-Swagger export-এ request fields, authentication, path IDs, standard success/error envelopes ও bookkeeper profile response schema আছে। Flexible form fields এবং অন্য module-এর কিছু response data generic: এই screen map ও actual response দেখে use করবেন; generated client সব field infer করবে ধরে নেবেন না।
+Swagger export-এ request fields, authentication ও path IDs আছে। ব্যবহারকারীর অনুরোধে অতিরিক্ত generic success/error response examples সরানো হয়েছে; runtime response envelope অপরিবর্তিত। Flexible form fields এবং অন্য module-এর কিছু response data generic: এই screen map ও actual response দেখে use করবেন; generated client সব field infer করবে ধরে নেবেন না।
 
 **বাকি production acceptance:** বাস্তব SMTP/S3/Stripe test, paid-course checkout, adaptive tier/mentoring rules, distributed rate limiting/session management এবং load test। এই scope-এ bookkeeper screen-এর ওপরের flowগুলো implemented ও tested; সব external service production verified বলে দাবি করা হয়নি।

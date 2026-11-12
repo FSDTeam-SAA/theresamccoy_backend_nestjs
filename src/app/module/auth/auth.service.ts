@@ -1,3 +1,4 @@
+import { refreshCookieOptions } from './refresh-cookie';
 import { randomInt, createHash, randomBytes } from 'crypto';
 import { HttpException, Injectable } from '@nestjs/common';
 import * as jwt from '@nestjs/jwt';
@@ -82,10 +83,12 @@ export class AuthService {
         expiresIn: config.jwt.refreshTokenExpires as any,
       } as jwt.JwtSignOptions,
     );
+    const refreshPayload = this.jwtService.decode<{ exp: number }>(
+      refreshToken,
+    );
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: config.env === 'production',
-      sameSite: 'strict',
+      ...refreshCookieOptions(),
+      maxAge: Math.max(0, refreshPayload.exp * 1000 - Date.now()),
     });
 
     const safeUser = user.toObject() as unknown as Record<string, unknown>;

@@ -18,6 +18,11 @@ export default {
   isMongoEnabled: true,
   bcryptSaltRounds: toNumber(process.env.BCRYPT_SALT_ROUNDS, 10),
   jwt: {
+    refreshCookieSameSite: (['lax', 'strict', 'none'].includes(
+      process.env.REFRESH_COOKIE_SAME_SITE ?? '',
+    )
+      ? process.env.REFRESH_COOKIE_SAME_SITE
+      : 'lax') as 'lax' | 'strict' | 'none',
     jwtSecret: process.env.JWT_SECRET || 'change-me-jwt-secret',
     jwtExpire: process.env.JWT_EXPIRE,
     accessTokenSecret:
