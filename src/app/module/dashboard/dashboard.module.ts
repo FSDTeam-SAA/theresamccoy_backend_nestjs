@@ -1,3 +1,17 @@
+import { SupportModule } from '../support/support.module';
+import {
+  Bookkeeper,
+  BookkeeperSchema,
+} from '../bookkeeper/entities/bookkeeper.entity';
+import {
+  Businesswoner,
+  BusinesswonerSchema,
+} from '../businesswoner/entities/businesswoner.entity';
+import {
+  CourseProgress,
+  CourseProgressSchema,
+} from '../course/entities/course.entity';
+import { EngagementModule } from '../engagement/engagement.module';
 import { Module } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
@@ -23,7 +37,12 @@ import { Request, RequestSchema } from '../request/entities/request.entity';
 
 @Module({
   imports: [
+    SupportModule,
+    EngagementModule,
     MongooseModule.forFeature([
+      { name: Bookkeeper.name, schema: BookkeeperSchema },
+      { name: Businesswoner.name, schema: BusinesswonerSchema },
+      { name: CourseProgress.name, schema: CourseProgressSchema },
       { name: User.name, schema: UserSchema },
       { name: Payment.name, schema: PaymentSchema },
       { name: ApplicationSubmission.name, schema: ApplicationSubmissionSchema },

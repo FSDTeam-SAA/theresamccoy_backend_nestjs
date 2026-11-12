@@ -7,9 +7,11 @@ import dotenv from 'dotenv';
 import { UtilsInterceptor } from './app/utils/utils.interceptor';
 import { GlobalExceptionFilter } from './app/middlewares/globalErrors.filter';
 import config from './app/config';
+import { validateProductionEnvironment } from './app/config/validate-production';
 dotenv.config();
 
 async function bootstrap() {
+  validateProductionEnvironment(process.env);
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn'],
     rawBody: true,
@@ -17,7 +19,10 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.enableCors({
-    origin: config.corsOrigin === '*' ? true : config.corsOrigin,
+    origin:
+      config.corsOrigin === '*'
+        ? true
+        : config.corsOrigin.split(',').map((origin) => origin.trim()),
     credentials: true,
   });
 
@@ -63,4 +68,7 @@ async function bootstrap() {
     console.log(`Swagger: http://localhost:${config.port}/api/docs`);
   });
 }
-bootstrap().catch(console.error);
+bootstrap().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

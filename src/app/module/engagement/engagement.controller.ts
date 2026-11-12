@@ -14,6 +14,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import AuthGuard from '../../middlewares/auth.guard';
 import {
+  ReadMessagesDto,
   CreateEngagementDto,
   SendMessageDto,
   SignEngagementDto,
@@ -35,6 +36,27 @@ export class EngagementController {
   list(@Req() req: Request) {
     return this.service.findAll(req.user!);
   }
+  @Get('inbox/me')
+  @UseGuards(AuthGuard('business', 'bookkeeper'))
+  @ApiOperation({
+    summary: 'Message threads, latest previews and unread counts',
+  })
+  async inbox(@Req() req: Request) {
+    return { data: await this.service.inbox(req.user!) };
+  }
+
+  @Patch(':id/messages/read')
+  @UseGuards(AuthGuard('business', 'bookkeeper'))
+  async read(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Body() dto: ReadMessagesDto,
+  ) {
+    return {
+      data: await this.service.markMessagesRead(id, req.user!, dto.through),
+    };
+  }
+
   @Get(':id')
   @UseGuards(AuthGuard('admin', 'business', 'bookkeeper'))
   get(@Param('id') id: string, @Req() req: Request) {
@@ -80,6 +102,7 @@ export class EngagementController {
   }
 
   @Patch(':id/complete')
+  @UseGuards(AuthGuard('business', 'admin'))
   @ApiOperation({
     summary: 'Business owner or admin completes an active engagement',
   })

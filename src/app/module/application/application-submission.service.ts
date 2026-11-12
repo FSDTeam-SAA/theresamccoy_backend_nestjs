@@ -12,7 +12,7 @@ import paginationHelper, { IOptions } from 'src/app/helpers/pagenation';
 import {
   ApplicationForm,
   ApplicationFormDocument,
-  // FormStatus,
+  FormStatus,
 } from './entities/application-form.entity';
 
 import {
@@ -49,7 +49,7 @@ export class ApplicationSubmissionService {
   async createOrUpdate(userId: string, dto: CreateSubmissionDto) {
     const form = await this.formModel.findOne({
       _id: dto.formId,
-      // status: FormStatus.PUBLISHED,
+      status: FormStatus.PUBLISHED,
       isActive: true,
     });
 

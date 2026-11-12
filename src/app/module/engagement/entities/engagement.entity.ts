@@ -1,25 +1,31 @@
+import { Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 export type EngagementDocument = HydratedDocument<Engagement>;
 @Schema({ timestamps: true })
 export class Engagement {
-  @Prop({ type: Types.ObjectId, ref: 'Request', required: true, unique: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Request',
+    required: true,
+    unique: true,
+  })
   requestId!: Types.ObjectId;
   @Prop({
-    type: Types.ObjectId,
+    type: MongooseSchema.Types.ObjectId,
     ref: 'MeetingSchedule',
     required: true,
     unique: true,
   })
   meetingId!: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   businessId!: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   bookkeeperId!: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   createdBy!: Types.ObjectId;
 
   @Prop()
@@ -89,15 +95,16 @@ export class Engagement {
 export const EngagementSchema = SchemaFactory.createForClass(Engagement);
 @Schema({ timestamps: true })
 export class EngagementMessage {
+  @Prop({ type: Date }) readAt?: Date;
   @Prop({
-    type: Types.ObjectId,
+    type: MongooseSchema.Types.ObjectId,
     ref: 'Engagement',
     required: true,
     index: true,
   })
   engagementId!: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   senderId!: Types.ObjectId;
 
   @Prop({ required: true, maxlength: 5000 })
@@ -105,3 +112,4 @@ export class EngagementMessage {
 }
 export const EngagementMessageSchema =
   SchemaFactory.createForClass(EngagementMessage);
+EngagementMessageSchema.index({ engagementId: 1, _id: -1 });

@@ -1,0 +1,1430 @@
+{
+  "info": {
+    "name": "Bookkeepers Marketplace API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "application",
+      "item": [
+        {
+          "name": "POST /api/v1/admin/application-forms",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/admin/application-forms",
+            "description": "Access: admin. Body: CreateApplicationFormDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/admin/application-forms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/admin/application-forms",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/admin/application-forms/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/admin/application-forms/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/admin/application-forms/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/admin/application-forms/{{id}}",
+            "description": "Access: admin. Body: UpdateApplicationFormDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/admin/application-forms/:id/publish",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/admin/application-forms/{{id}}/publish",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/admin/application-forms/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/admin/application-forms/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/admin/application-submissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/admin/application-submissions",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/admin/application-submissions/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/admin/application-submissions/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/admin/application-submissions/:id/review",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/admin/application-submissions/{{id}}/review",
+            "description": "Access: admin. Body: ReviewApplicationDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/applications/forms/published",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/applications/forms/published",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/applications/form/:formId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/applications/form/{{formId}}",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/applications/save",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/applications/save",
+            "description": "Access: bookkeeper. Body: CreateSubmissionDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/applications/my/:formId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/applications/my/{{formId}}",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/applications/:submissionId/submit",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/applications/{{submissionId}}/submit",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "POST /api/v1/auth/register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/register",
+            "description": "Access: Public. Body: CreateAuthDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "description": "Access: Public. Body: LoginAuthDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/refresh",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/refresh",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/logout",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/forgot-password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/forgot-password",
+            "description": "Access: Public. Body: ForgotPasswordDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/verify",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/verify",
+            "description": "Access: Public. Body: VerifyEmailDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/reset-password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/auth/reset-password",
+            "description": "Access: Public. Body: ResetPasswordDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/auth/change-password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/auth/change-password",
+            "description": "Access: bookkeeper, business, admin. Body: ChangePasswordDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "bookkeeper",
+      "item": [
+        {
+          "name": "POST /api/v1/bookkeeper",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper",
+            "description": "Access: bookkeeper. Body: CreateBookkeeperDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/bookkeeper/:id/experience",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/{{id}}/experience",
+            "description": "Access: bookkeeper, admin. Body: CreateExperienceDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/bookkeeper/:id/skills",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/{{id}}/skills",
+            "description": "Access: bookkeeper, admin. Body: CreateBookkeeperSkillsDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/bookkeeper/:id/assessment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/{{id}}/assessment",
+            "description": "Access: bookkeeper, admin. Body: CreateBookkeeperAssessmentDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/bookkeeper/:id/availability",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/{{id}}/availability",
+            "description": "Access: bookkeeper, admin. Body: CreateBookkeeperAvailabilityDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/bookkeeper",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/bookkeeper",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/bookkeeper/admin/all",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/admin/all",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/bookkeeper/profile/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/profile/me",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/bookkeeper/:id/review",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/{{id}}/review",
+            "description": "Access: admin. Body: ReviewBookkeeperDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/bookkeeper/profile/me",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/profile/me",
+            "description": "Access: bookkeeper. Body: UpdateMyBookkeeperProfileDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/bookkeeper/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/bookkeeper/{{id}}",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/bookkeeper/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/{{id}}",
+            "description": "Access: bookkeeper, admin. Body: UpdateBookkeeperDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/bookkeeper/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/{{id}}",
+            "description": "Access: bookkeeper, admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "businesswoner",
+      "item": [
+        {
+          "name": "POST /api/v1/businesswoner",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/businesswoner",
+            "description": "Access: business. Body: CreateBusinesswonerDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/businesswoner",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/businesswoner",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/businesswoner/profile/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/businesswoner/profile/me",
+            "description": "Access: business. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/businesswoner/profile/me",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/businesswoner/profile/me",
+            "description": "Access: business. Body: UpdateBusinesswonerDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/businesswoner/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/businesswoner/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/businesswoner/:id/approve",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/businesswoner/{{id}}/approve",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/businesswoner/:id/reject",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/businesswoner/{{id}}/reject",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PUT /api/v1/businesswoner/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/businesswoner/{{id}}",
+            "description": "Access: admin. Body: UpdateBusinesswonerDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/businesswoner/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/businesswoner/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "certificate",
+      "item": [
+        {
+          "name": "POST /api/v1/certificate",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/certificate",
+            "description": "Access: admin. Body: CreateCertificateDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/certificate",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/certificate",
+            "description": "Access: admin, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/certificate/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/certificate/{{id}}",
+            "description": "Access: admin, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PUT /api/v1/certificate/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/certificate/{{id}}",
+            "description": "Access: admin. Body: UpdateCertificateDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/certificate/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/certificate/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "contact",
+      "item": [
+        {
+          "name": "POST /api/v1/contact",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/contact",
+            "description": "Access: Public. Body: CreateContactDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/contact",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/contact",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/contact/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/contact/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PUT /api/v1/contact/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/contact/{{id}}",
+            "description": "Access: admin. Body: UpdateContactDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/contact/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/contact/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "item": [
+        {
+          "name": "GET /api/v1/content/:slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/content/{{slug}}",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/content/admin/:slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/content/admin/{{slug}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PUT /api/v1/content/admin/:slug",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/content/admin/{{slug}}",
+            "description": "Access: admin. Body: UpdatePageContentDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "course",
+      "item": [
+        {
+          "name": "POST /api/v1/course",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course",
+            "description": "Access: admin. Body: CreateCourseDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course",
+            "description": "Access: admin, business, bookkeeper, user. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course/catalog/public",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/course/catalog/public",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course/my/all",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/my/all",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course/enrollments/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/enrollments/me",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course/enrollments/all",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/enrollments/all",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course/admin/assignments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/admin/assignments",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/course/admin/assignments/:id/review",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/admin/assignments/{{id}}/review",
+            "description": "Access: admin. Body: ReviewAssignmentDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course/:courseId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}",
+            "description": "Access: admin, business, bookkeeper, user. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/course/:courseId",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}",
+            "description": "Access: admin. Body: UpdateCourseDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/course/:courseId",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/course/:courseId/module",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/module",
+            "description": "Access: admin. Body: AddModuleDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/course/:courseId/enroll",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/enroll",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/course/:courseId/module/:moduleId",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/module/{{moduleId}}",
+            "description": "Access: admin. Body: UpdateModuleDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/course/:courseId/module/:moduleId",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/module/{{moduleId}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/course/:courseId/module/:moduleId/lesson",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/module/{{moduleId}}/lesson",
+            "description": "Access: admin. Body: AddLessonDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/course/:courseId/lesson/:lessonId",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/lesson/{{lessonId}}",
+            "description": "Access: admin. Body: UpdateLessonDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/course/:courseId/module/:moduleId/lesson/:lessonId",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/module/{{moduleId}}/lesson/{{lessonId}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/course/:courseId/lesson/:lessonId/quiz",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/lesson/{{lessonId}}/quiz",
+            "description": "Access: admin. Body: AddQuizDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/course/:courseId/quiz/:quizId/option",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/quiz/{{quizId}}/option",
+            "description": "Access: admin. Body: AddQuizOptionDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/course/:courseId/lesson/:lessonId/quiz/submit",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/lesson/{{lessonId}}/quiz/submit",
+            "description": "Access: bookkeeper. Body: SubmitQuizDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course/:courseId/quiz-attempts/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/quiz-attempts/me",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/course/:courseId/lesson/:lessonId/complete",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/lesson/{{lessonId}}/complete",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course/:courseId/progress",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/progress",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/course/:courseId/lesson/:lessonId/assignment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/lesson/{{lessonId}}/assignment",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course/:courseId/submissions/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/{{courseId}}/submissions/me",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "dashboard",
+      "item": [
+        {
+          "name": "GET /api/v1/dashboard/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dashboard/me",
+            "description": "Access: business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/dashboard/overview",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dashboard/overview",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/dashboard/chart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dashboard/chart",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "engagement",
+      "item": [
+        {
+          "name": "POST /api/v1/engagement",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement",
+            "description": "Access: admin. Body: CreateEngagementDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/engagement",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement",
+            "description": "Access: admin, business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/engagement/inbox/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement/inbox/me",
+            "description": "Access: business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/engagement/:id/messages/read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement/{{id}}/messages/read",
+            "description": "Access: business, bookkeeper. Body: ReadMessagesDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/engagement/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement/{{id}}",
+            "description": "Access: admin, business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/engagement/:id/sign",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement/{{id}}/sign",
+            "description": "Access: bookkeeper, business. Body: SignEngagementDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/engagement/:id/payment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement/{{id}}/payment",
+            "description": "Access: business. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/engagement/:id/contacts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement/{{id}}/contacts",
+            "description": "Access: bookkeeper, business. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/engagement/:id/messages",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement/{{id}}/messages",
+            "description": "Access: bookkeeper, business. Body: SendMessageDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/engagement/:id/messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement/{{id}}/messages",
+            "description": "Access: bookkeeper, business. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/engagement/:id/complete",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/engagement/{{id}}/complete",
+            "description": "Access: business, admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "match-bookkeepers",
+      "item": [
+        {
+          "name": "GET /api/v1/match-bookkeepers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/match-bookkeepers",
+            "description": "Access: business. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "meeting-schedule",
+      "item": [
+        {
+          "name": "POST /api/v1/meeting-schedule/:requestId",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/meeting-schedule/{{requestId}}",
+            "description": "Access: admin. Body: CreateMeetingScheduleDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/meeting-schedule/my-schedules",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/meeting-schedule/my-schedules",
+            "description": "Access: business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/meeting-schedule",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/meeting-schedule",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/meeting-schedule/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/meeting-schedule/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/meeting-schedule/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/meeting-schedule/{{id}}",
+            "description": "Access: admin. Body: CreateMeetingScheduleDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/meeting-schedule/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/meeting-schedule/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/meeting-schedule/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/meeting-schedule/{{id}}/status",
+            "description": "Access: admin, business, bookkeeper. Body: ChangeMeetingStatusDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "payment",
+      "item": [
+        {
+          "name": "POST /api/v1/payment/:subscribeId",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/payment/{{subscribeId}}",
+            "description": "Access: business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/payment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/payment",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/payment/me/history",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/payment/me/history",
+            "description": "Access: business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/payment/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/payment/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "request",
+      "item": [
+        {
+          "name": "GET /api/v1/request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/request",
+            "description": "Access: admin, admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/request/:bookkeeperId",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/request/{{bookkeeperId}}",
+            "description": "Access: business. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/request/my-requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/request/my-requests",
+            "description": "Access: bookkeeper, business. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/request/accept/:requestId",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/request/accept/{{requestId}}",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/request/reject/:requestId",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/request/reject/{{requestId}}",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/request/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/request/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "review",
+      "item": [
+        {
+          "name": "POST /api/v1/reviews",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/reviews",
+            "description": "Access: business, bookkeeper. Body: CreateReviewDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/reviews/user/:userId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/reviews/user/{{userId}}",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "subscribe",
+      "item": [
+        {
+          "name": "POST /api/v1/subscribe",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/subscribe",
+            "description": "Access: admin. Body: CreateSubscribeDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/subscribe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/subscribe",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/subscribe/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/subscribe/{{id}}",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/subscribe/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/subscribe/{{id}}",
+            "description": "Access: admin. Body: UpdateSubscribeDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/subscribe/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/subscribe/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "support",
+      "item": [
+        {
+          "name": "GET /api/v1/support/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/support/me",
+            "description": "Access: business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/support/me/unread",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/support/me/unread",
+            "description": "Access: business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/support/me",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/support/me",
+            "description": "Access: business, bookkeeper. Body: SendMessageDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/support/me/read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/support/me/read",
+            "description": "Access: business, bookkeeper. Body: ReadMessagesDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/support/admin/inbox",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/support/admin/inbox",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/support/admin/:userId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/support/admin/{{userId}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "POST /api/v1/support/admin/:userId",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/support/admin/{{userId}}",
+            "description": "Access: admin. Body: SendMessageDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PATCH /api/v1/support/admin/:userId/read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/support/admin/{{userId}}/read",
+            "description": "Access: admin. Body: ReadMessagesDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "POST /api/v1/user",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/user",
+            "description": "Access: admin. Body: CreateUserDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/user",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/user/profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/user/profile",
+            "description": "Access: admin, business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PUT /api/v1/user/profile",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/user/profile",
+            "description": "Access: admin, business, bookkeeper. Body: UpdateMyUserProfileDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/user/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/user/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "PUT /api/v1/user/:id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/user/{{id}}",
+            "description": "Access: admin. Body: UpdateUserDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "DELETE /api/v1/user/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/user/{{id}}",
+            "description": "Access: admin. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "webhook",
+      "item": [
+        {
+          "name": "POST /api/v1/webhook",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/api/v1/webhook",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    },
+    {
+      "name": "src",
+      "item": [
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{baseUrl}}/",
+            "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,975 @@
+[
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/admin/application-forms",
+    "roles": "admin",
+    "body": "CreateApplicationFormDto",
+    "file": "src/app/module/application/admin-application-form.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/admin/application-forms",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/application/admin-application-form.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/admin/application-forms/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/application/admin-application-form.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/admin/application-forms/:id",
+    "roles": "admin",
+    "body": "UpdateApplicationFormDto",
+    "file": "src/app/module/application/admin-application-form.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/admin/application-forms/:id/publish",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/application/admin-application-form.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/admin/application-forms/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/application/admin-application-form.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/admin/application-submissions",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/application/admin-application-submission.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/admin/application-submissions/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/application/admin-application-submission.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/admin/application-submissions/:id/review",
+    "roles": "admin",
+    "body": "ReviewApplicationDto",
+    "file": "src/app/module/application/admin-application-submission.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/applications/forms/published",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/application/application.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/applications/form/:formId",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/application/application.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/applications/save",
+    "roles": "bookkeeper",
+    "body": "CreateSubmissionDto",
+    "file": "src/app/module/application/application.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/applications/my/:formId",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/application/application.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/applications/:submissionId/submit",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/application/application.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/auth/register",
+    "roles": "Public",
+    "body": "CreateAuthDto",
+    "file": "src/app/module/auth/auth.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/auth/login",
+    "roles": "Public",
+    "body": "LoginAuthDto",
+    "file": "src/app/module/auth/auth.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/auth/refresh",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/auth/auth.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/auth/logout",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/auth/auth.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/auth/forgot-password",
+    "roles": "Public",
+    "body": "ForgotPasswordDto",
+    "file": "src/app/module/auth/auth.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/auth/verify",
+    "roles": "Public",
+    "body": "VerifyEmailDto",
+    "file": "src/app/module/auth/auth.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/auth/reset-password",
+    "roles": "Public",
+    "body": "ResetPasswordDto",
+    "file": "src/app/module/auth/auth.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/auth/change-password",
+    "roles": "bookkeeper, business, admin",
+    "body": "ChangePasswordDto",
+    "file": "src/app/module/auth/auth.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/bookkeeper",
+    "roles": "bookkeeper",
+    "body": "CreateBookkeeperDto",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/bookkeeper/:id/experience",
+    "roles": "bookkeeper, admin",
+    "body": "CreateExperienceDto",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/bookkeeper/:id/skills",
+    "roles": "bookkeeper, admin",
+    "body": "CreateBookkeeperSkillsDto",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/bookkeeper/:id/assessment",
+    "roles": "bookkeeper, admin",
+    "body": "CreateBookkeeperAssessmentDto",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/bookkeeper/:id/availability",
+    "roles": "bookkeeper, admin",
+    "body": "CreateBookkeeperAvailabilityDto",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/bookkeeper",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/bookkeeper/admin/all",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/bookkeeper/profile/me",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/bookkeeper/:id/review",
+    "roles": "admin",
+    "body": "ReviewBookkeeperDto",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/bookkeeper/profile/me",
+    "roles": "bookkeeper",
+    "body": "UpdateMyBookkeeperProfileDto",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/bookkeeper/:id",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/bookkeeper/:id",
+    "roles": "bookkeeper, admin",
+    "body": "UpdateBookkeeperDto",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/bookkeeper/:id",
+    "roles": "bookkeeper, admin",
+    "body": "—",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/businesswoner",
+    "roles": "business",
+    "body": "CreateBusinesswonerDto",
+    "file": "src/app/module/businesswoner/businesswoner.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/businesswoner",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/businesswoner/businesswoner.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/businesswoner/profile/me",
+    "roles": "business",
+    "body": "—",
+    "file": "src/app/module/businesswoner/businesswoner.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/businesswoner/profile/me",
+    "roles": "business",
+    "body": "UpdateBusinesswonerDto",
+    "file": "src/app/module/businesswoner/businesswoner.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/businesswoner/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/businesswoner/businesswoner.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/businesswoner/:id/approve",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/businesswoner/businesswoner.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/businesswoner/:id/reject",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/businesswoner/businesswoner.controller.ts"
+  },
+  {
+    "method": "PUT",
+    "endpoint": "/api/v1/businesswoner/:id",
+    "roles": "admin",
+    "body": "UpdateBusinesswonerDto",
+    "file": "src/app/module/businesswoner/businesswoner.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/businesswoner/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/businesswoner/businesswoner.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/certificate",
+    "roles": "admin",
+    "body": "CreateCertificateDto",
+    "file": "src/app/module/certificate/certificate.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/certificate",
+    "roles": "admin, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/certificate/certificate.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/certificate/:id",
+    "roles": "admin, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/certificate/certificate.controller.ts"
+  },
+  {
+    "method": "PUT",
+    "endpoint": "/api/v1/certificate/:id",
+    "roles": "admin",
+    "body": "UpdateCertificateDto",
+    "file": "src/app/module/certificate/certificate.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/certificate/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/certificate/certificate.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/contact",
+    "roles": "Public",
+    "body": "CreateContactDto",
+    "file": "src/app/module/contact/contact.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/contact",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/contact/contact.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/contact/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/contact/contact.controller.ts"
+  },
+  {
+    "method": "PUT",
+    "endpoint": "/api/v1/contact/:id",
+    "roles": "admin",
+    "body": "UpdateContactDto",
+    "file": "src/app/module/contact/contact.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/contact/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/contact/contact.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/content/:slug",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/content/content.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/content/admin/:slug",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/content/content.controller.ts"
+  },
+  {
+    "method": "PUT",
+    "endpoint": "/api/v1/content/admin/:slug",
+    "roles": "admin",
+    "body": "UpdatePageContentDto",
+    "file": "src/app/module/content/content.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/course",
+    "roles": "admin",
+    "body": "CreateCourseDto",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course",
+    "roles": "admin, business, bookkeeper, user",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course/catalog/public",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course/my/all",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course/enrollments/me",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course/enrollments/all",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course/admin/assignments",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/course/admin/assignments/:id/review",
+    "roles": "admin",
+    "body": "ReviewAssignmentDto",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course/:courseId",
+    "roles": "admin, business, bookkeeper, user",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/course/:courseId",
+    "roles": "admin",
+    "body": "UpdateCourseDto",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/course/:courseId",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/course/:courseId/module",
+    "roles": "admin",
+    "body": "AddModuleDto",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/course/:courseId/enroll",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/course/:courseId/module/:moduleId",
+    "roles": "admin",
+    "body": "UpdateModuleDto",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/course/:courseId/module/:moduleId",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/course/:courseId/module/:moduleId/lesson",
+    "roles": "admin",
+    "body": "AddLessonDto",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/course/:courseId/lesson/:lessonId",
+    "roles": "admin",
+    "body": "UpdateLessonDto",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/course/:courseId/module/:moduleId/lesson/:lessonId",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/course/:courseId/lesson/:lessonId/quiz",
+    "roles": "admin",
+    "body": "AddQuizDto",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/course/:courseId/quiz/:quizId/option",
+    "roles": "admin",
+    "body": "AddQuizOptionDto",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/course/:courseId/lesson/:lessonId/quiz/submit",
+    "roles": "bookkeeper",
+    "body": "SubmitQuizDto",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course/:courseId/quiz-attempts/me",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/course/:courseId/lesson/:lessonId/complete",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course/:courseId/progress",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/course/:courseId/lesson/:lessonId/assignment",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course/:courseId/submissions/me",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/dashboard/me",
+    "roles": "business, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/dashboard/dashboard.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/dashboard/overview",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/dashboard/dashboard.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/dashboard/chart",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/dashboard/dashboard.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/engagement",
+    "roles": "admin",
+    "body": "CreateEngagementDto",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/engagement",
+    "roles": "admin, business, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/engagement/inbox/me",
+    "roles": "business, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/engagement/:id/messages/read",
+    "roles": "business, bookkeeper",
+    "body": "ReadMessagesDto",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/engagement/:id",
+    "roles": "admin, business, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/engagement/:id/sign",
+    "roles": "bookkeeper, business",
+    "body": "SignEngagementDto",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/engagement/:id/payment",
+    "roles": "business",
+    "body": "—",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/engagement/:id/contacts",
+    "roles": "bookkeeper, business",
+    "body": "—",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/engagement/:id/messages",
+    "roles": "bookkeeper, business",
+    "body": "SendMessageDto",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/engagement/:id/messages",
+    "roles": "bookkeeper, business",
+    "body": "—",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/engagement/:id/complete",
+    "roles": "business, admin",
+    "body": "—",
+    "file": "src/app/module/engagement/engagement.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/match-bookkeepers",
+    "roles": "business",
+    "body": "—",
+    "file": "src/app/module/match-bookkeepers/match-bookkeepers.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/meeting-schedule/:requestId",
+    "roles": "admin",
+    "body": "CreateMeetingScheduleDto",
+    "file": "src/app/module/meeting-schedule/meeting-schedule.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/meeting-schedule/my-schedules",
+    "roles": "business, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/meeting-schedule/meeting-schedule.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/meeting-schedule",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/meeting-schedule/meeting-schedule.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/meeting-schedule/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/meeting-schedule/meeting-schedule.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/meeting-schedule/:id",
+    "roles": "admin",
+    "body": "CreateMeetingScheduleDto",
+    "file": "src/app/module/meeting-schedule/meeting-schedule.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/meeting-schedule/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/meeting-schedule/meeting-schedule.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/meeting-schedule/:id/status",
+    "roles": "admin, business, bookkeeper",
+    "body": "ChangeMeetingStatusDto",
+    "file": "src/app/module/meeting-schedule/meeting-schedule.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/payment/:subscribeId",
+    "roles": "business, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/payment/payment.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/payment",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/payment/payment.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/payment/me/history",
+    "roles": "business, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/payment/payment.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/payment/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/payment/payment.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/request",
+    "roles": "admin, admin",
+    "body": "—",
+    "file": "src/app/module/request/request.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/request/:bookkeeperId",
+    "roles": "business",
+    "body": "—",
+    "file": "src/app/module/request/request.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/request/my-requests",
+    "roles": "bookkeeper, business",
+    "body": "—",
+    "file": "src/app/module/request/request.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/request/accept/:requestId",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/request/request.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/request/reject/:requestId",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/request/request.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/request/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/request/request.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/reviews",
+    "roles": "business, bookkeeper",
+    "body": "CreateReviewDto",
+    "file": "src/app/module/review/review.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/reviews/user/:userId",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/review/review.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/subscribe",
+    "roles": "admin",
+    "body": "CreateSubscribeDto",
+    "file": "src/app/module/subscribe/subscribe.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/subscribe",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/subscribe/subscribe.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/subscribe/:id",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/subscribe/subscribe.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/subscribe/:id",
+    "roles": "admin",
+    "body": "UpdateSubscribeDto",
+    "file": "src/app/module/subscribe/subscribe.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/subscribe/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/subscribe/subscribe.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/support/me",
+    "roles": "business, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/support/support.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/support/me/unread",
+    "roles": "business, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/support/support.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/support/me",
+    "roles": "business, bookkeeper",
+    "body": "SendMessageDto",
+    "file": "src/app/module/support/support.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/support/me/read",
+    "roles": "business, bookkeeper",
+    "body": "ReadMessagesDto",
+    "file": "src/app/module/support/support.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/support/admin/inbox",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/support/support.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/support/admin/:userId",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/support/support.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/support/admin/:userId",
+    "roles": "admin",
+    "body": "SendMessageDto",
+    "file": "src/app/module/support/support.controller.ts"
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/api/v1/support/admin/:userId/read",
+    "roles": "admin",
+    "body": "ReadMessagesDto",
+    "file": "src/app/module/support/support.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/user",
+    "roles": "admin",
+    "body": "CreateUserDto",
+    "file": "src/app/module/user/user.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/user",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/user/user.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/user/profile",
+    "roles": "admin, business, bookkeeper",
+    "body": "—",
+    "file": "src/app/module/user/user.controller.ts"
+  },
+  {
+    "method": "PUT",
+    "endpoint": "/api/v1/user/profile",
+    "roles": "admin, business, bookkeeper",
+    "body": "UpdateMyUserProfileDto",
+    "file": "src/app/module/user/user.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/user/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/user/user.controller.ts"
+  },
+  {
+    "method": "PUT",
+    "endpoint": "/api/v1/user/:id",
+    "roles": "admin",
+    "body": "UpdateUserDto",
+    "file": "src/app/module/user/user.controller.ts"
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/api/v1/user/:id",
+    "roles": "admin",
+    "body": "—",
+    "file": "src/app/module/user/user.controller.ts"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/v1/webhook",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/webhook/webhook.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/",
+    "roles": "Public",
+    "body": "—",
+    "file": "src/app.controller.ts"
+  }
+]

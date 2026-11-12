@@ -72,9 +72,11 @@ export class BookkeeperController {
   @UseGuards(AuthGuard('bookkeeper', 'admin'))
   @HttpCode(HttpStatus.CREATED)
   async createExperience(
+    @Req() req: Request,
     @Param('id') bookkeeperId: string,
     @Body() createExperienceDto: CreateExperienceDto,
   ) {
+    await this.bookkeeperService.assertOwner(bookkeeperId, req.user!);
     const result = await this.bookkeeperService.createExperience(
       bookkeeperId,
       createExperienceDto,
@@ -91,9 +93,11 @@ export class BookkeeperController {
   @UseGuards(AuthGuard('bookkeeper', 'admin'))
   @HttpCode(HttpStatus.CREATED)
   async createSkills(
+    @Req() req: Request,
     @Param('id') bookkeeperId: string,
     @Body() createSkillsDto: CreateBookkeeperSkillsDto,
   ) {
+    await this.bookkeeperService.assertOwner(bookkeeperId, req.user!);
     const result = await this.bookkeeperService.createSkills(
       bookkeeperId,
       createSkillsDto,
@@ -120,6 +124,7 @@ export class BookkeeperController {
   )
   @HttpCode(HttpStatus.CREATED)
   async createAssessment(
+    @Req() req: Request,
     @Param('id') bookkeeperId: string,
     @Body() createAssessmentDto: CreateBookkeeperAssessmentDto,
     @UploadedFiles()
@@ -128,6 +133,7 @@ export class BookkeeperController {
       uploadAssessment?: Express.Multer.File[];
     },
   ) {
+    await this.bookkeeperService.assertOwner(bookkeeperId, req.user!);
     const result = await this.bookkeeperService.createAssessment(
       bookkeeperId,
       createAssessmentDto,
@@ -145,9 +151,11 @@ export class BookkeeperController {
   @UseGuards(AuthGuard('bookkeeper', 'admin'))
   @HttpCode(HttpStatus.CREATED)
   async createAvailability(
+    @Req() req: Request,
     @Param('id') bookkeeperId: string,
     @Body() createAvailabilityDto: CreateBookkeeperAvailabilityDto,
   ) {
+    await this.bookkeeperService.assertOwner(bookkeeperId, req.user!);
     const result = await this.bookkeeperService.createAvailability(
       bookkeeperId,
       createAvailabilityDto,
@@ -232,6 +240,21 @@ export class BookkeeperController {
       meta: result.meta,
       data: result.data,
     };
+  }
+
+  @Get('admin/all')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('admin'))
+  @ApiOperation({
+    summary: 'Admin list including pending and rejected profiles',
+  })
+  async adminList(@Req() req: Request) {
+    const result = await this.bookkeeperService.getAllBookkeepers(
+      pick(req.query, ['searchTerm', 'status']),
+      pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']),
+      true,
+    );
+    return { data: result.data, meta: result.meta };
   }
 
   @Get('profile/me')
@@ -339,6 +362,7 @@ export class BookkeeperController {
   )
   @HttpCode(HttpStatus.OK)
   async updateByBookkeeper(
+    @Req() req: Request,
     @Param('id') id: string,
     @Body() updateBookkeeperDto: UpdateBookkeeperDto,
     @UploadedFiles()
@@ -347,6 +371,7 @@ export class BookkeeperController {
       uploadAssessment?: Express.Multer.File[];
     },
   ) {
+    await this.bookkeeperService.assertOwner(id, req.user!);
     const result = await this.bookkeeperService.updateBookkeeper(
       id,
       updateBookkeeperDto,
@@ -365,7 +390,8 @@ export class BookkeeperController {
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard('bookkeeper', 'admin'))
   @HttpCode(HttpStatus.OK)
-  async removeByBookkeeper(@Param('id') id: string) {
+  async removeByBookkeeper(@Req() req: Request, @Param('id') id: string) {
+    await this.bookkeeperService.assertOwner(id, req.user!);
     const result = await this.bookkeeperService.removeBookkeeper(id);
     return {
       message: 'Bookkeeper deleted successfully',

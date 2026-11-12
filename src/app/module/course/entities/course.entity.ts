@@ -1,3 +1,4 @@
+import { Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types } from 'mongoose';
 
@@ -126,6 +127,7 @@ export class CourseEnrollment {
 
 export const CourseEnrollmentSchema =
   SchemaFactory.createForClass(CourseEnrollment);
+CourseEnrollmentSchema.index({ userId: 1, courseId: 1 }, { unique: true });
 
 @Schema({ timestamps: true })
 export class CourseProgress {
@@ -144,6 +146,11 @@ export class CourseProgress {
 
 @Schema({ timestamps: true })
 export class AssignmentSubmission {
+  @Prop({ min: 0, max: 100 }) score?: number;
+  @Prop({ maxlength: 5000 }) feedback?: string;
+  @Prop({ type: Date }) reviewedAt?: Date;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  reviewedBy?: Types.ObjectId;
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   userId!: Types.ObjectId;
 
@@ -171,3 +178,19 @@ AssignmentSubmissionSchema.index(
   { unique: true },
 );
 // export const QuizOptionSchema = SchemaFactory.createForClass(QuizOption);
+
+@Schema({ timestamps: true })
+export class QuizAttempt {
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
+  userId!: Types.ObjectId;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Course', required: true })
+  courseId!: Types.ObjectId;
+  @Prop({ type: MongooseSchema.Types.ObjectId, required: true })
+  lessonId!: Types.ObjectId;
+  @Prop({ required: true, min: 0, max: 100 }) score!: number;
+  @Prop({ required: true }) passed!: boolean;
+  @Prop({ required: true }) correctAnswers!: number;
+  @Prop({ required: true }) totalQuestions!: number;
+}
+export const QuizAttemptSchema = SchemaFactory.createForClass(QuizAttempt);
+QuizAttemptSchema.index({ userId: 1, courseId: 1, lessonId: 1 });

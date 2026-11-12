@@ -1,9 +1,11 @@
+import type { Request } from 'express';
 import {
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
@@ -19,6 +21,16 @@ import AuthGuard from 'src/app/middlewares/auth.guard';
 @Controller('dashboard')
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
+
+  @Get('me')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('business', 'bookkeeper'))
+  @ApiOperation({
+    summary: 'My dashboard: profile, contracts, training and unread messages',
+  })
+  async myOverview(@Req() req: Request) {
+    return { data: await this.dashboardService.myOverview(req.user!) };
+  }
 
   @Get('overview')
   @ApiOperation({

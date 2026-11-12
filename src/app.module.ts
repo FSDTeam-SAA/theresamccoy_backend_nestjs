@@ -1,3 +1,5 @@
+import { SupportModule } from './app/module/support/support.module';
+import { ContentModule } from './app/module/content/content.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -26,6 +28,8 @@ import { ReviewModule } from './app/module/review/review.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(config.mongoUri),
+    SupportModule,
+    ContentModule,
     UserModule,
     AuthModule,
     ContactModule,

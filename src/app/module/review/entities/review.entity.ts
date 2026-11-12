@@ -1,3 +1,4 @@
+import { Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 export type ReviewDocument = HydratedDocument<Review>;
@@ -5,15 +6,25 @@ export type ReviewDocument = HydratedDocument<Review>;
 @Schema({ timestamps: true })
 export class Review {
   @Prop({
-    type: Types.ObjectId,
+    type: MongooseSchema.Types.ObjectId,
     ref: 'Engagement',
     required: true,
     index: true,
   })
   engagementId!: Types.ObjectId;
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true,
+  })
   reviewerId!: Types.ObjectId;
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true, index: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true,
+  })
   revieweeId!: Types.ObjectId;
   @Prop({ required: true, min: 1, max: 5 })
   rating!: number;

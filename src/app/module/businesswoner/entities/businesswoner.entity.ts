@@ -94,8 +94,14 @@ export class Businesswoner {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null })
   approvedBy!: Types.ObjectId | null;
 
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null })
+  rejectedBy!: Types.ObjectId | null;
+  @Prop({ type: Date, default: null })
+  rejectedAt!: Date | null;
   @Prop({ type: Date, default: null })
   approvedAt!: Date | null;
 }
 
 export const BusinesswonerSchema = SchemaFactory.createForClass(Businesswoner);
+
+BusinesswonerSchema.index({ userId: 1 }, { unique: true });

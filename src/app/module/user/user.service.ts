@@ -6,7 +6,7 @@ import { fileUpload } from 'src/app/helpers/fileUploder';
 import paginationHelper, { IOptions } from 'src/app/helpers/pagenation';
 import { IFilterParams } from 'src/app/helpers/pick';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateMyUserProfileDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
 
 const userSearchAbleFields = [
@@ -83,7 +83,7 @@ export class UserService {
     const updatedUser = await this.userModel.findByIdAndUpdate(
       id,
       updateUserDto,
-      { new: true },
+      { new: true, runValidators: true },
     );
     return updatedUser;
   }
@@ -107,9 +107,19 @@ export class UserService {
 
   async updateMyProfile(
     id: string,
-    updateUserDto: UpdateUserDto,
+    updateUserDto: UpdateMyUserProfileDto,
     file?: Express.Multer.File,
   ) {
+    const allowed = [
+      'firstName',
+      'lastName',
+      'phoneNumber',
+      'profilePicture',
+      'address',
+    ];
+    updateUserDto = Object.fromEntries(
+      Object.entries(updateUserDto).filter(([key]) => allowed.includes(key)),
+    );
     const user = await this.userModel.findById(id);
     if (!user) {
       throw new HttpException('User not found', 404);
@@ -120,6 +130,7 @@ export class UserService {
     }
     const result = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
       new: true,
+      runValidators: true,
     });
     return result;
   }

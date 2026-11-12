@@ -36,6 +36,13 @@ export class BookkeeperService {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
+  async assertOwner(id: string, actor: { id: string; role: string }) {
+    const profile = await this.bookkeeperModel.findById(id);
+    if (!profile) throw new HttpException('Bookkeeper not found', 404);
+    if (actor.role !== 'admin' && String(profile.userId) !== actor.id)
+      throw new HttpException('Forbidden', 403);
+  }
+
   // Step 1 - Personal Information
 
   async createBookkeeper(
@@ -179,7 +186,11 @@ export class BookkeeperService {
 
   // Get All
 
-  async getAllBookkeepers(params: IFilterParams, options: IOptions) {
+  async getAllBookkeepers(
+    params: IFilterParams,
+    options: IOptions,
+    admin = false,
+  ) {
     const { limit, page, skip, sortBy, sortOrder } = paginationHelper(options);
 
     const whereCondition = buildWhereConditions(params, [
@@ -191,6 +202,8 @@ export class BookkeeperService {
       'state',
     ]);
 
+    if (!admin)
+      Object.assign(whereCondition, { status: BookkeeperStatus.APPROVED });
     const bookkeepers = await this.bookkeeperModel
       .find(whereCondition)
       .sort({
@@ -214,7 +227,10 @@ export class BookkeeperService {
   // Get Single - সব data একসাথে
 
   async getSingleBookkeeper(id: string) {
-    const bookkeeper = await this.bookkeeperModel.findById(id);
+    const bookkeeper = await this.bookkeeperModel.findOne({
+      _id: id,
+      status: BookkeeperStatus.APPROVED,
+    });
 
     if (!bookkeeper) {
       throw new HttpException('Bookkeeper not found', HttpStatus.NOT_FOUND);
@@ -245,7 +261,7 @@ export class BookkeeperService {
           rejectionReason:
             status === BookkeeperStatus.REJECTED
               ? rejectionReason?.trim()
-              : undefined,
+              : null,
         },
       },
       { new: true, runValidators: true },

@@ -59,6 +59,15 @@ export class ApplicationFormService {
    * USER
    * Only published active form
    */
+  async publishedForms() {
+    return this.applicationFormModel
+      .find({ status: FormStatus.PUBLISHED, isActive: true })
+      .select('title description version')
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .lean();
+  }
+
   async getPublishedForm(id: string) {
     const form = await this.applicationFormModel
       .findOne({

@@ -52,6 +52,8 @@ export class BusinesswonerController {
   }
 
   @Get()
+  @UseGuards(AuthGuard('admin'))
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all businesswoner' })
   @ApiQuery({ name: 'searchTerm', description: 'Search term', required: false })
   @ApiQuery({
@@ -132,6 +134,8 @@ export class BusinesswonerController {
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard('admin'))
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get businesswoner by id' })
   @HttpCode(HttpStatus.OK)
   async getBusinesswonerById(@Param('id') id: string) {
@@ -178,7 +182,7 @@ export class BusinesswonerController {
   @Put(':id')
   @ApiOperation({ summary: 'Update businesswoner by id' })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('business', 'admin'))
+  @UseGuards(AuthGuard('admin'))
   @HttpCode(HttpStatus.OK)
   async updateBusinesswonerById(
     @Param('id') id: string,
@@ -197,7 +201,7 @@ export class BusinesswonerController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete businesswoner by id' })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('business', 'admin'))
+  @UseGuards(AuthGuard('admin'))
   @HttpCode(HttpStatus.OK)
   async deleteBusinesswonerById(@Param('id') id: string) {
     const result = await this.businesswonerService.deleteBusinesswoner(id);

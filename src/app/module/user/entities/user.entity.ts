@@ -35,6 +35,7 @@ export class User {
 
   @Prop({
     enum: ['bookkeeper', 'business', 'admin'],
+    default: 'business',
   })
   role!: string;
 
@@ -58,6 +59,17 @@ export class User {
 
   @Prop()
   verifiedForget!: boolean;
+
+  @Prop({ default: 0 })
+  tokenVersion!: number;
+  @Prop()
+  otpSentAt?: Date;
+  @Prop()
+  resetTokenHash?: string;
+  @Prop()
+  resetTokenExpiry?: Date;
+  @Prop({ default: 0 })
+  otpAttempts?: number;
 
   @Prop()
   stripeAccountId!: string;

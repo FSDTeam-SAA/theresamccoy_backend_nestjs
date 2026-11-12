@@ -9,6 +9,10 @@ import config from '../src/app/config';
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
+  afterEach(async () => {
+    await app.close();
+  });
+
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
