@@ -18935,7 +18935,6 @@
   },
   "info": {
     "title": "theresamccoy API",
-    "description": "Frontend handoff: register as bookkeeper/business, login, then Authorize with data.accessToken. All JSON responses use {statusCode, success, message, meta?, data}. MongoDB IDs are 24-character strings. User ID and bookkeeper profile ID differ.\n\nBookkeeper: POST /bookkeeper → PATCH /bookkeeper/profile/me (save fields/documents) → POST /bookkeeper/profile/me/application/submit → admin review. Assessment cards: GET /applications/forms/published; locked forms require an approved prerequisite. Course dashboard: GET /course/my/overview. Quiz passing threshold is 80%; answer keys are never sent to learners.\n\nMultipart profile arrays are JSON strings; PDF files align with their JSON array indexes. Client messaging/contact access requires a paid active engagement. Support messaging is separate. Refresh uses an HttpOnly cookie (send credentials); reset-password requires resetToken returned by verify.\n\n400 = invalid input; 401 = login/refresh required; 403 = role/ownership/prerequisite/payment gate; 409 = duplicate or invalid workflow state. External SMTP/S3/Stripe require configured services. Paid-course checkout and adaptive tier policy are not implemented; estimated assessment duration is informational.",
     "version": "1.1.0",
     "contact": {}
   },
