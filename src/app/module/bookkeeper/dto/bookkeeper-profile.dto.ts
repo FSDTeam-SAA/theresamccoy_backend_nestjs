@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { plainToInstance, Transform, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -41,7 +41,11 @@ const parseNestedArray = <T>(
 };
 
 export class BookkeeperCertificationDto {
-  @ApiPropertyOptional({ example: 'Xero Certified Advisor' })
+  @ApiPropertyOptional({ example: 'https://example.com/certification.pdf' })
+  @IsOptional()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  fileUrl?: string;
+  @ApiProperty({ example: 'Xero Certified Advisor' })
   @IsString()
   @MaxLength(150)
   title!: string;
@@ -62,7 +66,7 @@ export class BookkeeperCertificationDto {
 }
 
 export class BookkeeperPortfolioDto {
-  @ApiPropertyOptional({ example: 'Shopify and Xero Integration' })
+  @ApiProperty({ example: 'Shopify and Xero Integration' })
   @IsString()
   @MaxLength(200)
   title!: string;
@@ -86,6 +90,40 @@ export class BookkeeperPortfolioDto {
 }
 
 export class UpdateMyBookkeeperProfileDto {
+  @ApiPropertyOptional({ example: 'Bachelor of Business Administration' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  educationalQualification?: string;
+  @ApiPropertyOptional({ type: [String], example: ['E-commerce', 'Payroll'] })
+  @Transform(parseJson)
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(30)
+  @IsString({ each: true })
+  specializations?: string[];
+  @ApiPropertyOptional({
+    type: 'string',
+    format: 'binary',
+    description: 'PDF resume',
+  })
+  @IsOptional()
+  uploadResume?: unknown;
+  @ApiPropertyOptional({
+    type: 'string',
+    format: 'binary',
+    description: 'Optional PDF cover letter',
+  })
+  @IsOptional()
+  coverLetter?: unknown;
+  @ApiPropertyOptional({
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+    description: 'PDF files in certifications JSON order',
+  })
+  @IsOptional()
+  certificationFiles?: unknown;
+
   @ApiPropertyOptional({ example: 'Sarah' })
   @IsOptional()
   @IsString()

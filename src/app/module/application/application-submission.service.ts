@@ -1,3 +1,4 @@
+import { ApplicationFormService } from './application-form.service';
 import {
   BadRequestException,
   Injectable,
@@ -13,6 +14,7 @@ import {
   ApplicationForm,
   ApplicationFormDocument,
   FormStatus,
+  QuestionType,
 } from './entities/application-form.entity';
 
 import {
@@ -36,6 +38,7 @@ const escapeRegex = (value: string) =>
 @Injectable()
 export class ApplicationSubmissionService {
   constructor(
+    private readonly forms: ApplicationFormService,
     @InjectModel(ApplicationSubmission.name)
     private readonly submissionModel: Model<ApplicationSubmissionDocument>,
 
@@ -47,6 +50,7 @@ export class ApplicationSubmissionService {
    * Create / save application
    */
   async createOrUpdate(userId: string, dto: CreateSubmissionDto) {
+    await this.forms.getPublishedForm(dto.formId, userId);
     const form = await this.formModel.findOne({
       _id: dto.formId,
       status: FormStatus.PUBLISHED,
@@ -62,11 +66,15 @@ export class ApplicationSubmissionService {
      */
     const validQuestionIds = new Set(
       form.sections.flatMap((section) =>
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         section.questions.map((question: any) => question._id.toString()),
       ),
     );
 
+    if (
+      new Set(dto.answers.map((answer) => answer.questionId)).size !==
+      dto.answers.length
+    )
+      throw new BadRequestException('Each question must be answered once');
     for (const answer of dto.answers) {
       if (!validQuestionIds.has(answer.questionId)) {
         throw new BadRequestException(
@@ -85,6 +93,7 @@ export class ApplicationSubmissionService {
     });
 
     if (existing) {
+      existing.formVersion = form.version;
       existing.candidateName = dto.candidateName;
       existing.date = dto.date;
       existing.positionName = dto.positionName;
@@ -124,6 +133,7 @@ export class ApplicationSubmissionService {
         userId,
         formId,
       })
+      .sort({ createdAt: -1, _id: -1 })
       .lean();
 
     return submission;
@@ -149,6 +159,55 @@ export class ApplicationSubmissionService {
     /**
      * এখানে তোমার calculation function call হবে
      */
+    const form = await this.forms.getPublishedForm(
+      String(submission.formId),
+      userId,
+    );
+    if (form.version !== submission.formVersion)
+      throw new BadRequestException(
+        'Form changed; reload and save the current form before submitting',
+      );
+    const present = (value: unknown): boolean =>
+      value !== null &&
+      value !== undefined &&
+      (typeof value !== 'string' || value.trim().length > 0) &&
+      (!Array.isArray(value) || value.length > 0);
+    for (const section of form.sections)
+      for (const question of section.questions) {
+        const answer = submission.answers.find(
+          (item) =>
+            String(item.questionId) ===
+            String((question as unknown as { _id: unknown })._id),
+        );
+        const hasAnswer =
+          question.type === QuestionType.SUB_QUESTION
+            ? !!answer?.subAnswers?.length
+            : question.type === QuestionType.TABLE
+              ? !!answer?.tableAnswers?.some((row) =>
+                  row.cells.some((cell) => present(cell.value)),
+                )
+              : present(answer?.value);
+        if (question.required && !hasAnswer)
+          throw new BadRequestException(
+            'Required answer missing: ' + question.title,
+          );
+        if (answer?.subAnswers?.length)
+          for (const sub of question.subQuestions) {
+            if (
+              sub.required &&
+              !present(
+                answer.subAnswers.find(
+                  (item) =>
+                    String(item.subQuestionId) ===
+                    String((sub as unknown as { _id: unknown })._id),
+                )?.value,
+              )
+            )
+              throw new BadRequestException(
+                'Required sub-answer missing: ' + sub.question,
+              );
+          }
+      }
     const calculationResult = await this.calculateSubmission(submission);
 
     submission.calculationResult = calculationResult;

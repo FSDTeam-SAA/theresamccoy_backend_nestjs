@@ -41,12 +41,15 @@ describe('isolated MongoDB API workflows', () => {
       imports: [AppModule],
     }).compile();
     app = module.createNestApplication({ logger: false });
-    app.setGlobalPrefix('api/v1');
+    app.setGlobalPrefix('api/v1', { exclude: [''] });
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, transform: true }),
     );
     app.useGlobalInterceptors(new UtilsInterceptor());
     app.useGlobalFilters(new GlobalExceptionFilter(app.get(HttpAdapterHost)));
+    const { createApiDocument } = require('../src/app/swagger/document');
+    const { SwaggerModule } = require('@nestjs/swagger');
+    SwaggerModule.setup('api/docs', app, createApiDocument(app));
     await app.init();
     connection = app.get(getConnectionToken());
     await Promise.all(
@@ -150,6 +153,278 @@ describe('isolated MongoDB API workflows', () => {
       (await model('Bookkeeper').findById(otherProfile._id)).xero,
     ).toBeUndefined();
   });
+  it('saves the Figma application documents as multipart and submits only complete profiles', async () => {
+    await api()
+      .post('/api/v1/bookkeeper/profile/me/application/submit')
+      .set('Authorization', auth(bookkeeperToken))
+      .expect(400);
+    const { fileUpload } = require('../src/app/helpers/fileUploder');
+    const upload = jest
+      .spyOn(fileUpload, 'uploadToS3')
+      .mockImplementation(async (file: any) => ({
+        url: 'https://example.com/' + file.originalname,
+        public_id: file.originalname,
+      }));
+    try {
+      const response = await api()
+        .patch('/api/v1/bookkeeper/profile/me')
+        .set('Authorization', auth(bookkeeperToken))
+        .field('skills', JSON.stringify(['Xero', 'Payroll']))
+        .field('specializations', JSON.stringify(['Retail']))
+        .field(
+          'certifications',
+          JSON.stringify([{ title: 'Xero Advisor', year: 2024 }]),
+        )
+        .field(
+          'educationalQualification',
+          'Bachelor of Business Administration',
+        )
+        .field('yearsOfExperience', '6')
+        .attach('uploadResume', Buffer.from('%PDF-1.4 test'), {
+          filename: 'resume.pdf',
+          contentType: 'application/pdf',
+        })
+        .attach('coverLetter', Buffer.from('%PDF-1.4 cover'), {
+          filename: 'cover.pdf',
+          contentType: 'application/pdf',
+        })
+        .attach('certificationFiles', Buffer.from('%PDF-1.4 cert'), {
+          filename: 'cert.pdf',
+          contentType: 'application/pdf',
+        })
+        .expect(200);
+      expect(response.body.data).toMatchObject({
+        educationalQualification: 'Bachelor of Business Administration',
+        yearsOfExperience: 6,
+        uploadResume: 'https://example.com/resume.pdf',
+        coverLetterUrl: 'https://example.com/cover.pdf',
+      });
+      expect(response.body.data.certifications[0].fileUrl).toBe(
+        'https://example.com/cert.pdf',
+      );
+      expect(upload).toHaveBeenCalledTimes(3);
+      const submitted = await api()
+        .post('/api/v1/bookkeeper/profile/me/application/submit')
+        .set('Authorization', auth(bookkeeperToken))
+        .expect(201);
+      expect(submitted.body.data).toMatchObject({
+        applicationStatus: 'submitted',
+        status: 'pending',
+      });
+      await api()
+        .post('/api/v1/bookkeeper/profile/me/application/submit')
+        .set('Authorization', auth(bookkeeperToken))
+        .expect(409);
+      upload.mockClear();
+      await api()
+        .patch('/api/v1/bookkeeper/profile/me')
+        .set('Authorization', auth(bookkeeperToken))
+        .attach('uploadResume', Buffer.from('not a PDF'), {
+          filename: 'bad.png',
+          contentType: 'image/png',
+        })
+        .expect(400);
+      expect(upload).not.toHaveBeenCalled();
+    } finally {
+      upload.mockRestore();
+    }
+  });
+
+  it('enforces assessment prerequisites on list, open and save; rejects cycles', async () => {
+    const createForm = async (payload: any) =>
+      (
+        await api()
+          .post('/api/v1/admin/application-forms')
+          .set('Authorization', auth(adminToken))
+          .send(payload)
+          .expect(201)
+      ).body.data;
+    const first = await createForm({
+      title: 'Core bookkeeping',
+      status: 'published',
+      durationMinutes: 45,
+      sections: [],
+    });
+    const second = await createForm({
+      title: 'Software proficiency',
+      status: 'published',
+      durationMinutes: 30,
+      prerequisiteFormId: first._id,
+      sections: [],
+    });
+    const list = await api()
+      .get('/api/v1/applications/forms/published')
+      .set('Authorization', auth(bookkeeperToken))
+      .expect(200);
+    expect(
+      list.body.data.find((item: any) => item._id === second._id),
+    ).toMatchObject({
+      locked: true,
+      durationMinutes: 30,
+      assessmentStatus: 'locked',
+    });
+    await api()
+      .get('/api/v1/applications/form/' + second._id)
+      .set('Authorization', auth(bookkeeperToken))
+      .expect(403);
+    await api()
+      .post('/api/v1/applications/save')
+      .set('Authorization', auth(bookkeeperToken))
+      .send({
+        candidateName: 'Bookkeeper',
+        date: '2026-11-12',
+        positionName: 'Bookkeeper',
+        time: 30,
+        formId: second._id,
+        answers: [],
+      })
+      .expect(403);
+    await api()
+      .patch('/api/v1/admin/application-forms/' + first._id)
+      .set('Authorization', auth(adminToken))
+      .send({ prerequisiteFormId: second._id })
+      .expect(400);
+    await model('ApplicationSubmission').create({
+      userId: bookkeeperId,
+      formId: first._id,
+      formVersion: 1,
+      status: 'approved',
+      score: 82,
+    });
+    const unlocked = await api()
+      .get('/api/v1/applications/forms/published')
+      .set('Authorization', auth(bookkeeperToken))
+      .expect(200);
+    expect(
+      unlocked.body.data.find((item: any) => item._id === second._id).locked,
+    ).toBe(false);
+    await api()
+      .get('/api/v1/applications/form/' + second._id)
+      .set('Authorization', auth(bookkeeperToken))
+      .expect(200);
+    const dashboard = await api()
+      .get('/api/v1/dashboard/me')
+      .set('Authorization', auth(bookkeeperToken))
+      .expect(200);
+    expect(dashboard.body.data.assessmentScore).toBe(82);
+    expect(dashboard.body.data.profileCompletion.percentage).toBeGreaterThan(0);
+  });
+
+  it('allows assessment drafts but requires answers before final submission', async () => {
+    const form = await model('ApplicationForm').create({
+      title: 'Required assessment',
+      status: 'published',
+      sections: [
+        {
+          sectionNumber: 1,
+          title: 'Basics',
+          questions: [
+            {
+              number: '1',
+              title: 'Explain double-entry',
+              type: 'text',
+              required: true,
+            },
+          ],
+        },
+      ],
+    });
+    const payload = {
+      candidateName: 'Bookkeeper',
+      date: '2026-11-12',
+      positionName: 'Bookkeeper',
+      time: 45,
+      formId: String(form._id),
+      answers: [] as any[],
+    };
+    const draft = await api()
+      .post('/api/v1/applications/save')
+      .set('Authorization', auth(bookkeeperToken))
+      .send(payload)
+      .expect(200);
+    const submit = '/api/v1/applications/' + draft.body.data._id + '/submit';
+    await api()
+      .patch(submit)
+      .set('Authorization', auth(bookkeeperToken))
+      .expect(400);
+    payload.answers = [
+      {
+        questionId: String(form.sections[0].questions[0]._id),
+        value: 'Every transaction has balanced debits and credits.',
+      },
+    ];
+    await api()
+      .post('/api/v1/applications/save')
+      .set('Authorization', auth(bookkeeperToken))
+      .send({ ...payload, answers: [payload.answers[0], payload.answers[0]] })
+      .expect(400);
+    await api()
+      .post('/api/v1/applications/save')
+      .set('Authorization', auth(bookkeeperToken))
+      .send(payload)
+      .expect(200);
+    await api()
+      .patch(submit)
+      .set('Authorization', auth(bookkeeperToken))
+      .expect(200);
+    await api()
+      .patch(submit)
+      .set('Authorization', auth(bookkeeperToken))
+      .expect(400);
+  });
+
+  it('serves an importable Swagger contract with multipart fields, responses and valid references', async () => {
+    const response = await api().get('/api/docs-json').expect(200);
+    const spec = response.body;
+    const multipart =
+      spec.paths['/api/v1/bookkeeper/profile/me'].patch.requestBody.content[
+        'multipart/form-data'
+      ].schema;
+    expect(multipart.properties.certifications.type).toBe('string');
+    expect(multipart.properties.uploadResume.format).toBe('binary');
+    expect(multipart.properties.coverLetter.format).toBe('binary');
+    expect(multipart.properties.certificationFiles.items.format).toBe('binary');
+    expect(
+      spec.paths['/api/v1/bookkeeper/profile/me/application/submit'].post
+        .security,
+    ).toEqual([{ 'access-token': [] }]);
+    const inspect = (value: any) => {
+      if (!value || typeof value !== 'object') return;
+      if (typeof value.$ref === 'string' && value.$ref.startsWith('#/')) {
+        const target = value.$ref
+          .slice(2)
+          .split('/')
+          .reduce(
+            (current: any, key: string) =>
+              current?.[key.replace(/~1/g, '/').replace(/~0/g, '~')],
+            spec,
+          );
+        expect(target).toBeDefined();
+      }
+      Object.values(value).forEach(inspect);
+    };
+    inspect(spec);
+    for (const [route, pathItem] of Object.entries(spec.paths) as any) {
+      for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
+        const operation = pathItem[method];
+        if (!operation || route === '/api/v1/webhook') continue;
+        const success = Object.keys(operation.responses).find((key) =>
+          /^2\d\d$/.test(key),
+        );
+        expect(success).toBeDefined();
+        expect(
+          operation.responses[success!].content['application/json'].schema
+            .properties.data,
+        ).toBeDefined();
+      }
+    }
+    if (process.env.EXPORT_OPENAPI === '1')
+      require('fs').writeFileSync(
+        path.join(process.cwd(), 'docs', 'openapi.json'),
+        JSON.stringify(spec, null, 2) + '\n',
+      );
+  });
+
   it('scores quizzes, enforces enrollment and persists lesson progress', async () => {
     const course = await model('Course').create({
       name: 'Test Course',

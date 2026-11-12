@@ -305,6 +305,9 @@ export class BookkeeperController {
     FileFieldsInterceptor(
       [
         { name: 'profilePicture', maxCount: 1 },
+        { name: 'uploadResume', maxCount: 1 },
+        { name: 'coverLetter', maxCount: 1 },
+        { name: 'certificationFiles', maxCount: 10 },
         { name: 'portfolioFiles', maxCount: 10 },
       ],
       fileUpload.uploadConfig,
@@ -316,6 +319,9 @@ export class BookkeeperController {
     @Body() dto: UpdateMyBookkeeperProfileDto,
     @UploadedFiles()
     files?: {
+      uploadResume?: Express.Multer.File[];
+      coverLetter?: Express.Multer.File[];
+      certificationFiles?: Express.Multer.File[];
       profilePicture?: Express.Multer.File[];
       portfolioFiles?: Express.Multer.File[];
     },
@@ -328,6 +334,21 @@ export class BookkeeperController {
     return {
       message: 'Bookkeeper profile updated successfully',
       data: result,
+    };
+  }
+
+  @Post('profile/me/application/submit')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('bookkeeper'))
+  @ApiOperation({
+    summary: 'Submit saved bookkeeper application for admin review',
+    description:
+      'Save profile first. Requires a PDF resume, skills, yearsOfExperience and educationalQualification. A pending submission cannot be submitted twice.',
+  })
+  async submitApplication(@Req() req: Request) {
+    return {
+      message: 'Application submitted for review',
+      data: await this.bookkeeperService.submitApplication(req.user!.id),
     };
   }
 

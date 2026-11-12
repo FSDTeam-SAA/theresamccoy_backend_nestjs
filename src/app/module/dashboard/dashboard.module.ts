@@ -1,3 +1,5 @@
+import { CourseModule } from '../course/course.module';
+import { ApplicationFormModule } from '../application/application-form.module';
 import { SupportModule } from '../support/support.module';
 import {
   Bookkeeper,
@@ -37,6 +39,8 @@ import { Request, RequestSchema } from '../request/entities/request.entity';
 
 @Module({
   imports: [
+    CourseModule,
+    ApplicationFormModule,
     SupportModule,
     EngagementModule,
     MongooseModule.forFeature([

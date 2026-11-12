@@ -9,6 +9,7 @@ const privateFields = new Set([
   'website',
   'linkedInProfile',
   'uploadResume',
+  'coverLetterUrl',
   'uploadAssessment',
 ]);
 const secretFields = new Set([

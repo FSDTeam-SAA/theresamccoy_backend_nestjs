@@ -16,8 +16,8 @@ import {
   CreateExperienceDto,
 } from './dto/create-bookkeeper.dto';
 
-import { UpdateBookkeeperDto } from './dto/update-bookkeeper.dto';
 import { UpdateMyBookkeeperProfileDto } from './dto/bookkeeper-profile.dto';
+import { UpdateBookkeeperDto } from './dto/update-bookkeeper.dto';
 
 import { fileUpload } from 'src/app/helpers/fileUploder';
 import {
@@ -293,6 +293,9 @@ export class BookkeeperService {
     userId: string,
     dto: UpdateMyBookkeeperProfileDto,
     files?: {
+      uploadResume?: Express.Multer.File[];
+      coverLetter?: Express.Multer.File[];
+      certificationFiles?: Express.Multer.File[];
       profilePicture?: Express.Multer.File[];
       portfolioFiles?: Express.Multer.File[];
     },
@@ -308,6 +311,63 @@ export class BookkeeperService {
     const updateData: Record<string, unknown> = { ...dto };
     delete updateData.profilePicture;
     delete updateData.portfolioFiles;
+    delete updateData.uploadResume;
+    delete updateData.coverLetter;
+    delete updateData.certificationFiles;
+    // Validate all file groups before any remote uploads or database writes.
+    const resume = files?.uploadResume?.[0];
+    const cover = files?.coverLetter?.[0];
+    const certificateFiles = files?.certificationFiles ?? [];
+    const pdfFiles = [
+      resume,
+      cover,
+      ...certificateFiles,
+      ...(files?.portfolioFiles ?? []),
+    ].filter((file): file is Express.Multer.File => !!file);
+
+    if (pdfFiles.some((file) => file.mimetype !== 'application/pdf')) {
+      throw new HttpException(
+        'Resume, cover letter, certification and portfolio files must be PDF',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (certificateFiles.length > (dto.certifications?.length ?? 0)) {
+      throw new HttpException(
+        'Each certification file needs a matching certifications JSON item',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if ((files?.portfolioFiles?.length ?? 0) > (dto.portfolio?.length ?? 0)) {
+      throw new HttpException(
+        'Each portfolio file needs a matching portfolio JSON item',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (
+      files?.profilePicture?.[0] &&
+      !files.profilePicture[0].mimetype.startsWith('image/')
+    ) {
+      throw new HttpException(
+        'Profile picture must be an image',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (resume) {
+      updateData.uploadResume = (await fileUpload.uploadToS3(resume)).url;
+    }
+    if (cover) {
+      updateData.coverLetterUrl = (await fileUpload.uploadToS3(cover)).url;
+    }
+    if (dto.certifications) {
+      updateData.certifications = await Promise.all(
+        dto.certifications.map(async (item, index) => ({
+          ...item,
+          fileUrl: certificateFiles[index]
+            ? (await fileUpload.uploadToS3(certificateFiles[index])).url
+            : item.fileUrl,
+        })),
+      );
+    }
 
     const profilePicture = files?.profilePicture?.[0];
     if (profilePicture) {
@@ -386,6 +446,54 @@ export class BookkeeperService {
       'userId',
       'firstName lastName email phoneNumber profilePicture',
     );
+  }
+
+  async submitApplication(userId: string) {
+    const profile = await this.bookkeeperModel.findOne({ userId });
+    if (!profile) {
+      throw new HttpException(
+        'Create a bookkeeper profile first',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const missing: string[] = [];
+    if (!profile.uploadResume) missing.push('uploadResume');
+    if (!profile.skills?.length) missing.push('skills');
+    if (profile.yearsOfExperience == null) missing.push('yearsOfExperience');
+    if (!profile.educationalQualification?.trim())
+      missing.push('educationalQualification');
+    if (missing.length) {
+      throw new HttpException(
+        'Complete required fields: ' + missing.join(', '),
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const submitted = await this.bookkeeperModel.findOneAndUpdate(
+      {
+        _id: profile._id,
+        userId,
+        $or: [
+          { applicationStatus: { $ne: 'submitted' } },
+          { status: BookkeeperStatus.REJECTED },
+        ],
+      },
+      {
+        $set: {
+          applicationStatus: 'submitted',
+          applicationSubmittedAt: new Date(),
+          status: BookkeeperStatus.PENDING,
+        },
+        $unset: { rejectionReason: '', reviewedBy: '', reviewedAt: '' },
+      },
+      { new: true, runValidators: true },
+    );
+    if (!submitted) {
+      throw new HttpException(
+        'Application is already submitted',
+        HttpStatus.CONFLICT,
+      );
+    }
+    return submitted;
   }
 
   // Update - সব section এক method দিয়ে

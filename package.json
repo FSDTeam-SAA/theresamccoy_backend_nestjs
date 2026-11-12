@@ -21,7 +21,8 @@
     "check": "npm run build && npm test -- --runInBand && npm run test:e2e -- --runInBand",
     "test:integration": "jest --config ./test/jest-integration.json --runInBand",
     "docs:api": "node scripts/generate-api-reference.cjs",
-    "admin:create": "node scripts/create-admin.cjs"
+    "admin:create": "node scripts/create-admin.cjs",
+    "docs:openapi": "node scripts/export-openapi.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1126.0",

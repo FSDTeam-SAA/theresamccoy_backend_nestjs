@@ -33,7 +33,7 @@ Read the full page hierarchy: Authentication, Public website flow, Business Owne
 
 ## Verification
 
-Final run: build passed; 26 unit/regression tests, 8 mocked HTTP tests and 7 disposable-MongoDB integration tests passed (41 total). Targeted ESLint and `git diff --check` passed. Tests were run on Windows with Node 26.7.0 and MongoDB 8.2.6. Mongoose emits deprecation warnings for the existing `new: true` query option; these did not fail tests.
+Final run after bookkeeper follow-up: build passed; 31 unit/regression tests, 8 mocked HTTP tests and 11 disposable-MongoDB integration tests passed (50 total). Targeted ESLint and whitespace checks passed. S3 is mocked for document-upload tests; real SMTP/S3/Stripe acceptance remains separate.
 
 - `npm run check`: build, unit/regression suites and mocked HTTP suites.
 - `npm run test:integration`: complete AppModule starts against a disposable local MongoDB, creates indexes, uses real password hashing, and exercises persistence plus HTTP authorization. No configured client database is used. SMTP and Stripe are disabled in this suite.
@@ -48,3 +48,13 @@ Read [the Bengali frontend/test guide](frontend-and-testing.bn.md) before client
 Existing data is untouched. Before applying new unique indexes, audit duplicate business profiles and course enrollments. Inspect legacy Mixed reference fields in engagement/review collections: historical string values may need conversion to ObjectId in a reviewed migration. OTPs issued before this update must be reissued. Existing JWTs without tokenVersion remain version zero until a password change/reset invalidates them.
 
 The following are not certified complete: adaptive/tier/mentoring policy, paid course checkout, distributed rate limits, current-session refresh revocation, real S3/SMTP/Stripe acceptance, production data migration, backup/restore and load tests. Quiz pass threshold is currently 80%, preserving a simple explicit server rule; confirm the client's final scoring policy before launch. No deployment or production data changes were made.
+
+## Bookkeeper follow-up (2026-11-12)
+
+Re-read detailed Figma context for Dashboard (1:18580), Profile & Skills (1:20510), Application (1:22070), Assessment cards (1:18901), Courses (1:18950), Modules & Lessons (1:20839), Assignments (1:21112) and Settings (1:19588).
+
+Added application PDF resume/cover letter/certification upload, specialization and education fields, explicit profile-application submission, computed dashboard completion and learning metadata, current lesson/module and remaining time, approved-prerequisite assessment locks with cycle detection, required-answer checks on final assessment submission, and received-review rating metadata.
+
+The shared Swagger factory now documents standard JSON success/error envelopes, authentication, request fields, bookkeeper profile response and multipart JSON text. Contract tests validate references and the live /api/docs-json route. [OpenAPI JSON](openapi.json) is generated from the same factory; [bookkeeper integration guide](bookkeeper-integration.bn.md) maps every screen and request. Some flexible/non-bookkeeper response data remains generic and is called out in the guide.
+
+Application prerequisite duration is an estimate, not a proctored exam timer; scores are admin-reviewed, while LMS quizzes are auto-scored. Paid-course checkout/adaptive tier policy is still separate work. Existing production data and external accounts were not mutated.

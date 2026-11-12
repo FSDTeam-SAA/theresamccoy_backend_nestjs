@@ -1,3 +1,5 @@
+> Bookkeeper frontend handoff: [বাংলা screen/API guide](docs/bookkeeper-integration.bn.md), [importable OpenAPI JSON](docs/openapi.json). Regenerate with `npm run docs:openapi`; live Swagger is `/api/docs`.
+
 > Frontend integration and test instructions (বাংলা): [docs/frontend-and-testing.bn.md](docs/frontend-and-testing.bn.md). Current route inventory: [docs/api-reference.md](docs/api-reference.md). Design audit and verification: [docs/backend-audit.md](docs/backend-audit.md). These describe the current contracts; older examples below may predate authorization changes.
 
 <p align="center">

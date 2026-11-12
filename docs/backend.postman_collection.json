@@ -350,6 +350,15 @@
           }
         },
         {
+          "name": "POST /api/v1/bookkeeper/profile/me/application/submit",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/bookkeeper/profile/me/application/submit",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
           "name": "GET /api/v1/bookkeeper/:id",
           "request": {
             "method": "GET",
@@ -623,7 +632,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/api/v1/course",
-            "description": "Access: admin, business, bookkeeper, user. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+            "description": "Access: admin, business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
           }
         },
         {
@@ -636,6 +645,15 @@
             },
             "url": "{{baseUrl}}/api/v1/course/catalog/public",
             "description": "Access: Public. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/course/my/overview",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/course/my/overview",
+            "description": "Access: bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
           }
         },
         {
@@ -689,7 +707,7 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/api/v1/course/{{courseId}}",
-            "description": "Access: admin, business, bookkeeper, user. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+            "description": "Access: admin, business, bookkeeper. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
           }
         },
         {
@@ -1175,6 +1193,15 @@
             "header": [],
             "url": "{{baseUrl}}/api/v1/reviews",
             "description": "Access: business, bookkeeper. Body: CreateReviewDto. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
+          }
+        },
+        {
+          "name": "GET /api/v1/reviews/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/reviews/me",
+            "description": "Access: bookkeeper, business. Body: —. Use Swagger request schema at /api/docs. Mutations require real input; this collection is an inventory, not a blind collection runner."
           }
         },
         {

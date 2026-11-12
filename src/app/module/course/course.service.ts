@@ -159,8 +159,48 @@ export class CourseService {
         totalLessons: progressData.totalLessons,
         completedLessons: progressData.completedLessons,
         progressPercentage: progressData.percentage,
+        nextLessonId: progressData.nextLessonId,
+        currentModule: progressData.currentModule,
+        remainingMinutes: progressData.remainingMinutes,
       };
     });
+  }
+
+  async learningOverview(userId: string) {
+    const courses = await this.getMyAllCourses(userId);
+    const summaries = courses.map((course) => ({
+      courseId: course._id,
+      name: course.name,
+      instructor: course.instructor ?? null,
+      level: course.level,
+      status:
+        course.progressPercentage === 100
+          ? 'completed'
+          : course.completedLessons > 0
+            ? 'in_progress'
+            : 'not_started',
+      totalLessons: course.totalLessons,
+      completedLessons: course.completedLessons,
+      progressPercentage: course.progressPercentage,
+      totalModules: course.modules.length,
+      currentModule: course.currentModule,
+      nextLessonId: course.nextLessonId,
+      remainingMinutes: course.remainingMinutes,
+    }));
+    return {
+      completedCourses: summaries.filter(
+        (course) => course.status === 'completed',
+      ).length,
+      remainingLessons: summaries.reduce(
+        (sum, course) => sum + course.totalLessons - course.completedLessons,
+        0,
+      ),
+      currentCourse:
+        summaries.find((course) => course.status === 'in_progress') ??
+        summaries.find((course) => course.status === 'not_started') ??
+        null,
+      courses: summaries,
+    };
   }
 
   async enrollCourse(userId: string, courseId: string) {
@@ -711,7 +751,33 @@ export class CourseService {
         .map((id) => id.toString())
         .filter((id) => courseLessonIds.has(id)),
     ).size;
+    const done = new Set(
+      (progress?.completedLessonIds ?? []).map((id) => String(id)),
+    );
+    const nextLesson = course.modules
+      .flatMap((module) => module.lessons)
+      .find((lesson) => !done.has(String(lesson._id)));
+    const currentIndex = nextLesson
+      ? course.modules.findIndex((module) =>
+          module.lessons.some(
+            (lesson) => String(lesson._id) === String(nextLesson._id),
+          ),
+        )
+      : -1;
     return {
+      nextLessonId: nextLesson?._id ?? null,
+      currentModule:
+        currentIndex >= 0
+          ? {
+              id: course.modules[currentIndex]._id,
+              name: course.modules[currentIndex].name,
+              number: currentIndex + 1,
+            }
+          : null,
+      remainingMinutes: course.modules
+        .flatMap((module) => module.lessons)
+        .filter((lesson) => !done.has(String(lesson._id)))
+        .reduce((sum, lesson) => sum + (lesson.durationMinutes ?? 0), 0),
       progress,
       totalLessons,
       completedLessons,

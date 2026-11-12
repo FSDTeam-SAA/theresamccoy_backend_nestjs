@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -45,6 +46,8 @@ export class ReviewService {
     }
   }
   async listForUser(userId: string) {
+    if (!Types.ObjectId.isValid(userId))
+      throw new BadRequestException('Invalid user ID');
     const [data, summary] = await Promise.all([
       this.reviews
         .find({ revieweeId: userId })

@@ -25,9 +25,19 @@ export class ReviewController {
   create(@Body() dto: CreateReviewDto, @Req() req: Request) {
     return this.service.create(dto, req.user!);
   }
+  @Get('me')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('bookkeeper', 'business'))
+  @ApiOperation({ summary: 'My received reviews and rating summary in meta' })
+  async mine(@Req() req: Request) {
+    const result = await this.service.listForUser(req.user!.id);
+    return { data: result.data, meta: result.summary };
+  }
+
   @Get('user/:userId')
   @ApiOperation({ summary: 'Get reviews and rating summary for a user' })
-  list(@Param('userId') userId: string) {
-    return this.service.listForUser(userId);
+  async list(@Param('userId') userId: string) {
+    const result = await this.service.listForUser(userId);
+    return { data: result.data, meta: result.summary };
   }
 }
