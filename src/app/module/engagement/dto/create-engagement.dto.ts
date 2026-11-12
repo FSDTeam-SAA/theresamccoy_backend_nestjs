@@ -55,3 +55,11 @@ export class SignEngagementDto {
 export class SendMessageDto {
   @ApiProperty() @IsString() @MinLength(1) @MaxLength(5000) text!: string;
 }
+
+export class ReadMessagesDto {
+  @ApiProperty({
+    description: 'Newest displayed message ID; later messages stay unread',
+  })
+  @IsMongoId()
+  through!: string;
+}

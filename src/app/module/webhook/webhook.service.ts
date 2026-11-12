@@ -1,5 +1,5 @@
 import { EngagementService } from '../engagement/engagement.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import Stripe from 'stripe';
 import config from 'src/app/config';
 import { InjectModel } from '@nestjs/mongoose';
@@ -88,8 +88,15 @@ export class WebhookService {
     });
     if (!payment) return res.json({ received: true });
 
-    payment.status = 'completed';
-    await payment.save();
+    if (
+      intent.status !== 'succeeded' ||
+      intent.currency !== 'usd' ||
+      intent.amount_received !== Math.round(payment.amount * 100) ||
+      intent.amount !== Math.round(payment.amount * 100) ||
+      intent.metadata.userId !== String(payment.user)
+    ) {
+      throw new BadRequestException('Payment amount or owner does not match');
+    }
 
     const paymentType = intent.metadata?.paymentType ?? payment.paymentType;
 
@@ -99,17 +106,16 @@ export class WebhookService {
       if (!subscribeId) return res.json({ received: true });
 
       const plan = await this.subscribeModel.findById(subscribeId);
-      if (!plan) return res.json({ received: true });
+      if (!plan) throw new BadRequestException('Subscription plan missing');
 
-      // Add user to plan's users array if not already present
-      const alreadyAdded = plan.user?.some(
-        (id) => id.toString() === payment.user.toString(),
+      await this.subscribeModel.updateOne(
+        { _id: plan._id },
+        { $addToSet: { user: payment.user } },
       );
-      if (!alreadyAdded) {
-        plan.user = plan.user ?? [];
-        plan.user.push(payment.user);
-        await plan.save();
-      }
+      await this.paymentModel.updateOne(
+        { _id: payment._id },
+        { $set: { status: 'completed' } },
+      );
 
       return res.json({
         received: true,
@@ -130,8 +136,11 @@ export class WebhookService {
       stripePaymentIntentId: intent.id,
     });
     if (payment) {
-      payment.status = 'failed';
-      await payment.save();
+      // A delayed failure event must never undo a completed payment.
+      await this.paymentModel.updateOne(
+        { _id: payment._id, status: { $ne: 'completed' } },
+        { $set: { status: 'failed' } },
+      );
     }
 
     return res.json({ received: true });

@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
@@ -18,6 +19,9 @@ export class CreateAuthDto {
   lastName!: string;
 
   @ApiProperty({ example: 'saurav@gmail.com' })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
   @IsEmail({}, { message: 'Valid email is required' })
   @IsNotEmpty()
   email!: string;
@@ -27,14 +31,17 @@ export class CreateAuthDto {
   @MinLength(6, { message: 'Password must be at least 6 characters' })
   password!: string;
 
-  @ApiPropertyOptional({ enum: ['bookkeeper', 'business', 'admin'] })
+  @ApiPropertyOptional({ enum: ['bookkeeper', 'business'] })
   @IsOptional()
-  @IsEnum(['bookkeeper', 'business', 'admin'])
-  role?: string;
+  @IsEnum(['bookkeeper', 'business'])
+  role: string = 'business';
 }
 
 export class LoginAuthDto {
   @ApiProperty({ example: 'saurav@gmail.com' })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
   @IsEmail({}, { message: 'Valid email is required' })
   @IsNotEmpty()
   email!: string;
@@ -47,6 +54,9 @@ export class LoginAuthDto {
 
 export class ForgotPasswordDto {
   @ApiProperty({ example: 'saurav@gmail.com' })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
   @IsEmail({}, { message: 'Valid email is required' })
   @IsNotEmpty()
   email!: string;
@@ -54,6 +64,9 @@ export class ForgotPasswordDto {
 
 export class VerifyEmailDto {
   @ApiProperty({ example: 'saurav@gmail.com' })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
   @IsEmail({}, { message: 'Valid email is required' })
   @IsNotEmpty()
   email!: string;
@@ -65,7 +78,17 @@ export class VerifyEmailDto {
 }
 
 export class ResetPasswordDto {
+  @ApiProperty({
+    description: 'One-time resetToken returned by POST /auth/verify',
+  })
+  @IsString()
+  @IsNotEmpty()
+  resetToken!: string;
+
   @ApiProperty({ example: 'saurav@gmail.com' })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
   @IsEmail({}, { message: 'Valid email is required' })
   @IsNotEmpty()
   email!: string;

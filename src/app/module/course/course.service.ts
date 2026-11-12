@@ -1,3 +1,5 @@
+import { ReviewAssignmentDto } from './dto/review-assignment.dto';
+import { SubmitQuizDto } from './dto/submit-quiz.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -24,6 +26,7 @@ import {
 import {
   AssignmentSubmission,
   AssignmentSubmissionDocument,
+  QuizAttempt,
   Course,
   CourseDocument,
   CourseProgress,
@@ -38,6 +41,8 @@ import {
 @Injectable()
 export class CourseService {
   constructor(
+    @InjectModel(QuizAttempt.name)
+    private readonly attempts: Model<QuizAttempt>,
     @InjectModel(Course.name)
     private readonly courseModel: Model<CourseDocument>,
     @InjectModel(CourseProgress.name)
@@ -80,10 +85,7 @@ export class CourseService {
     if (requesterRole !== 'admin') {
       Object.assign(whereConditions, { status: 'published' });
     }
-    const selectFields =
-      requesterRole === 'admin'
-        ? '-__v'
-        : '-__v -modules.lessons.quizzes.answer';
+    const selectFields = requesterRole === 'admin' ? '-__v' : '-__v -modules';
     const courses = await this.courseModel
       .find(whereConditions)
       .select(selectFields)
@@ -102,7 +104,11 @@ export class CourseService {
     };
   }
 
-  async getSingleCourse(courseId: string, requesterRole: string) {
+  async getSingleCourse(
+    courseId: string,
+    requesterRole: string,
+    requesterId?: string,
+  ) {
     const query: Record<string, unknown> = { _id: courseId };
     if (requesterRole !== 'admin') query.status = 'published';
     const selectFields =
@@ -113,7 +119,19 @@ export class CourseService {
     if (!course) {
       throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
     }
+    if (requesterRole !== 'admin') {
+      if (!requesterId) throw new HttpException('Enrollment is required', 403);
+      await this.checkEnrollment(requesterId, courseId);
+    }
     return course;
+  }
+
+  async publicCatalog() {
+    return this.courseModel
+      .find({ status: 'published' })
+      .select('name description photo instructor level price')
+      .sort({ createdAt: -1 })
+      .limit(100);
   }
 
   async getMyAllCourses(userId: string) {
@@ -148,6 +166,11 @@ export class CourseService {
   async enrollCourse(userId: string, courseId: string) {
     const course = await this.getCourseDocument(courseId);
     this.ensurePublished(course);
+    if (course.price > 0)
+      throw new HttpException(
+        'Paid course enrollment requires a verified course payment; checkout is not configured',
+        409,
+      );
     const enrolled = await this.enrollmentModel.findOne({ userId, courseId });
     if (enrolled) {
       throw new HttpException(
@@ -384,6 +407,15 @@ export class CourseService {
     if (!targetLesson) {
       throw new HttpException('Lesson not found', HttpStatus.NOT_FOUND);
     }
+    if (
+      addQuizDto.options.length < 2 ||
+      !addQuizDto.options.includes(addQuizDto.answer)
+    ) {
+      throw new HttpException(
+        'Provide at least two options including the correct answer',
+        400,
+      );
+    }
     const newQuiz = {
       _id: new Types.ObjectId(),
       question: addQuizDto.question,
@@ -444,7 +476,21 @@ export class CourseService {
       throw new HttpException('Course is not published', HttpStatus.FORBIDDEN);
     }
     await this.checkEnrollment(userId, courseId);
-    this.findLesson(course, lessonId);
+    const lesson = this.findLesson(course, lessonId);
+    if (
+      lesson.quizzes.length &&
+      !(await this.attempts.exists({
+        userId,
+        courseId,
+        lessonId,
+        passed: true,
+      }))
+    ) {
+      throw new HttpException(
+        'Pass the lesson quiz before completing this lesson',
+        400,
+      );
+    }
     const orderedLessonIds = course.modules.flatMap((module) =>
       module.lessons.map((lesson) => lesson._id.toString()),
     );
@@ -506,9 +552,48 @@ export class CourseService {
     const uploaded = await fileUpload.uploadToS3(file);
     return this.submissionModel.findOneAndUpdate(
       { userId, courseId, lessonId },
-      { $set: { file: uploaded.url, status: 'submitted' } },
+      {
+        $set: { file: uploaded.url, status: 'submitted' },
+        $unset: { score: '', feedback: '', reviewedAt: '', reviewedBy: '' },
+      },
       { new: true, upsert: true, runValidators: true },
     );
+  }
+
+  async assignmentSubmissions(courseId?: string) {
+    if (courseId && !Types.ObjectId.isValid(courseId))
+      throw new HttpException('Invalid course ID', 400);
+    return this.submissionModel
+      .find(courseId ? { courseId } : {})
+      .populate('userId', 'firstName lastName email')
+      .populate('courseId', 'name')
+      .sort({ updatedAt: -1 })
+      .limit(100);
+  }
+
+  async reviewAssignment(
+    id: string,
+    adminId: string,
+    dto: ReviewAssignmentDto,
+  ) {
+    if (!Types.ObjectId.isValid(id))
+      throw new HttpException('Invalid submission ID', 400);
+    const submission = await this.submissionModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          score: dto.score,
+          feedback: dto.feedback ?? '',
+          reviewedBy: adminId,
+          reviewedAt: new Date(),
+          status: 'reviewed',
+        },
+      },
+      { new: true, runValidators: true },
+    );
+    if (!submission)
+      throw new HttpException('Assignment submission not found', 404);
+    return submission;
   }
 
   async getMySubmissions(userId: string, courseId: string) {
@@ -516,6 +601,50 @@ export class CourseService {
     this.ensurePublished(course);
     await this.checkEnrollment(userId, courseId);
     return this.submissionModel.find({ userId, courseId });
+  }
+
+  async submitQuiz(
+    userId: string,
+    courseId: string,
+    lessonId: string,
+    dto: SubmitQuizDto,
+  ) {
+    const course = await this.getCourseDocument(courseId);
+    this.ensurePublished(course);
+    await this.checkEnrollment(userId, courseId);
+    const lesson = this.findLesson(course, lessonId);
+    if (!lesson.quizzes.length) throw new HttpException('Quiz not found', 404);
+    const answers = new Map(
+      dto.answers.map((item) => [item.quizId, item.answer]),
+    );
+    if (
+      answers.size !== lesson.quizzes.length ||
+      dto.answers.length !== answers.size ||
+      lesson.quizzes.some((quiz) => !answers.has(String(quiz._id)))
+    ) {
+      throw new HttpException('Answer every quiz question exactly once', 400);
+    }
+    const correctAnswers = lesson.quizzes.filter(
+      (quiz) => answers.get(String(quiz._id)) === quiz.answer,
+    ).length;
+    const score = Math.round((correctAnswers / lesson.quizzes.length) * 100);
+    return this.attempts.create({
+      userId,
+      courseId,
+      lessonId,
+      score,
+      passed: score >= 80,
+      correctAnswers,
+      totalQuestions: lesson.quizzes.length,
+    });
+  }
+
+  async getQuizAttempts(userId: string, courseId: string) {
+    await this.checkEnrollment(userId, courseId);
+    return this.attempts
+      .find({ userId, courseId })
+      .sort({ createdAt: -1 })
+      .limit(100);
   }
 
   private async getCourseDocument(courseId: string) {

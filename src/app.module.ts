@@ -1,3 +1,5 @@
+import { SupportModule } from './app/module/support/support.module';
+import { ContentModule } from './app/module/content/content.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -20,11 +22,14 @@ import { MatchBookkeepersModule } from './app/module/match-bookkeepers/match-boo
 import { RequestModule } from './app/module/request/request.module';
 import { MeetingScheduleModule } from './app/module/meeting-schedule/meeting-schedule.module';
 import { EngagementModule } from './app/module/engagement/engagement.module';
+import { ReviewModule } from './app/module/review/review.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(config.mongoUri),
+    SupportModule,
+    ContentModule,
     UserModule,
     AuthModule,
     ContactModule,
@@ -41,6 +46,7 @@ import { EngagementModule } from './app/module/engagement/engagement.module';
     RequestModule,
     MeetingScheduleModule,
     EngagementModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],

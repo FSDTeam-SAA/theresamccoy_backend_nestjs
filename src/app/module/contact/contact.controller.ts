@@ -135,6 +135,8 @@ export class ContactController {
   }
 
   @Get(':id')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('admin'))
   @ApiOperation({
     summary: 'get contact by id',
   })

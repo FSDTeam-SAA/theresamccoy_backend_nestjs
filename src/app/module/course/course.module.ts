@@ -3,6 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CourseController } from './course.controller';
 import { CourseService } from './course.service';
 import {
+  QuizAttempt,
+  QuizAttemptSchema,
   Course,
   CourseSchema,
   CourseProgress,
@@ -25,6 +27,7 @@ import {
 @Module({
   imports: [
     MongooseModule.forFeature([
+      { name: QuizAttempt.name, schema: QuizAttemptSchema },
       { name: Course.name, schema: CourseSchema },
       { name: Module.name, schema: ModuleSchema },
       { name: Lesson.name, schema: LessonSchema },

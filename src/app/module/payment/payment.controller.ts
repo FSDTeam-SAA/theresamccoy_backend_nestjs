@@ -29,7 +29,7 @@ export class PaymentController {
     summary: 'Create payment intent for subscription',
   })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('user'))
+  @UseGuards(AuthGuard('business', 'bookkeeper'))
   async paySubscribe(
     @Req() req: Request,
     @Param('subscribeId') subscribeId: string,
@@ -109,7 +109,16 @@ export class PaymentController {
     };
   }
 
+  @Get('me/history')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('business', 'bookkeeper'))
+  async history(@Req() req: Request) {
+    return { data: await this.paymentService.myHistory(req.user!.id) };
+  }
+
   @Get(':id')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('admin'))
   @ApiOperation({ summary: 'Get payment by id' })
   @HttpCode(HttpStatus.OK)
   async getSinglePayment(@Param('id') id: string) {

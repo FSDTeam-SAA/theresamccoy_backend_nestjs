@@ -1,3 +1,5 @@
+> Frontend integration and test instructions (বাংলা): [docs/frontend-and-testing.bn.md](docs/frontend-and-testing.bn.md). Current route inventory: [docs/api-reference.md](docs/api-reference.md). Design audit and verification: [docs/backend-audit.md](docs/backend-audit.md). These describe the current contracts; older examples below may predate authorization changes.
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>

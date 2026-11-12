@@ -4,6 +4,8 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
+  Body,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +20,7 @@ import pick from 'src/app/helpers/pick';
 import AuthGuard from 'src/app/middlewares/auth.guard';
 import { ApplicationSubmissionService } from './application-submission.service';
 import { SubmissionStatus } from './entities/application-submission.entity';
+import { ReviewApplicationDto } from './dto/admin/review-application.dto';
 
 @ApiTags('Admin Application Submissions')
 @ApiBearerAuth('access-token')
@@ -74,6 +77,17 @@ export class AdminApplicationSubmissionController {
       success: true,
       message: 'Application submission retrieved successfully',
       data,
+    };
+  }
+
+  @Patch(':id/review')
+  @ApiOperation({
+    summary: 'Review, approve or reject an application submission',
+  })
+  async review(@Param('id') id: string, @Body() dto: ReviewApplicationDto) {
+    return {
+      message: 'Application review saved successfully',
+      data: await this.submissionService.review(id, dto),
     };
   }
 }

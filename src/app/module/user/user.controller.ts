@@ -27,7 +27,7 @@ import { fileUpload } from 'src/app/helpers/fileUploder';
 import pick from 'src/app/helpers/pick';
 import AuthGuard from 'src/app/middlewares/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateMyUserProfileDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
 @ApiTags('User')
@@ -191,11 +191,11 @@ export class UserController {
   @ApiConsumes('multipart/form-data')
   @UseGuards(AuthGuard('admin', 'business', 'bookkeeper'))
   @UseInterceptors(FileInterceptor('profilePicture', fileUpload.uploadConfig))
-  @ApiBody({ type: UpdateUserDto })
+  @ApiBody({ type: UpdateMyUserProfileDto })
   @HttpCode(HttpStatus.OK)
   async updateProfile(
     @Req() req: Request,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateMyUserProfileDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
     const result = await this.userService.updateMyProfile(
@@ -210,6 +210,8 @@ export class UserController {
   }
 
   @Get(':id')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('admin'))
   @ApiOperation({
     summary: 'Get single user by id',
   })

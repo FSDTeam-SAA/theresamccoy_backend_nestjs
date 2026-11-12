@@ -17,10 +17,18 @@ interface IPaginationResult {
 }
 
 const paginationHelper = (options: IOptions): IPaginationResult => {
-  const page = Number(options.page) || 1;
-  const limit = Number(options.limit) || 10;
+  const positiveInteger = (value: unknown, fallback: number) => {
+    const number = Number(value);
+    return Number.isSafeInteger(number) && number > 0 ? number : fallback;
+  };
+  const page = Math.min(positiveInteger(options.page, 1), 1000000);
+  const limit = Math.min(positiveInteger(options.limit, 10), 100);
   const skip = (page - 1) * limit;
-  const sortBy = options.sortBy || 'createdAt';
+  const sortBy =
+    typeof options.sortBy === 'string' &&
+    /^[a-zA-Z][a-zA-Z0-9_.]*$/.test(options.sortBy)
+      ? options.sortBy
+      : 'createdAt';
   const sortOrder: SortOrder = options.sortOrder === 'asc' ? 'asc' : 'desc';
   return {
     page,

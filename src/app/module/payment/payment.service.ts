@@ -31,7 +31,7 @@ export class PaymentService {
 
   private getStripeClient() {
     if (!this.stripe) {
-      throw new HttpException('Stripe is not configured', 500);
+      throw new HttpException('Stripe is not configured', 503);
     }
 
     return this.stripe;
@@ -184,6 +184,14 @@ export class PaymentService {
       },
       data: users,
     };
+  }
+
+  async myHistory(userId: string) {
+    return this.paymentModel
+      .find({ user: userId })
+      .populate('subscribe', 'name price')
+      .sort({ createdAt: -1 })
+      .limit(100);
   }
 
   async getSinglePayment(id: string) {

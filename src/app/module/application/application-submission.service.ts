@@ -12,7 +12,7 @@ import paginationHelper, { IOptions } from 'src/app/helpers/pagenation';
 import {
   ApplicationForm,
   ApplicationFormDocument,
-  // FormStatus,
+  FormStatus,
 } from './entities/application-form.entity';
 
 import {
@@ -22,6 +22,7 @@ import {
 } from './entities/application-submission.entity';
 
 import { CreateSubmissionDto } from './dto/user/create-submission.dto';
+import { ReviewApplicationDto } from './dto/admin/review-application.dto';
 
 export interface SubmissionFilters {
   searchTerm?: string;
@@ -48,7 +49,7 @@ export class ApplicationSubmissionService {
   async createOrUpdate(userId: string, dto: CreateSubmissionDto) {
     const form = await this.formModel.findOne({
       _id: dto.formId,
-      // status: FormStatus.PUBLISHED,
+      status: FormStatus.PUBLISHED,
       isActive: true,
     });
 
@@ -247,5 +248,18 @@ export class ApplicationSubmissionService {
     }
 
     return application;
+  }
+
+  async review(id: string, dto: ReviewApplicationDto) {
+    if (!Types.ObjectId.isValid(id))
+      throw new BadRequestException('Invalid submission ID');
+    const submission = await this.submissionModel.findById(id);
+    if (!submission) throw new NotFoundException('Application not found');
+    if (submission.status === SubmissionStatus.DRAFT)
+      throw new BadRequestException('Draft applications cannot be reviewed');
+    submission.status = dto.status;
+    if (dto.score !== undefined) submission.score = dto.score;
+    if (dto.adminNote !== undefined) submission.adminNote = dto.adminNote;
+    return submission.save();
   }
 }

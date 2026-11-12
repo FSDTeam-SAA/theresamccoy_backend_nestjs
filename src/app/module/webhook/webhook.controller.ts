@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Post,
   Headers,
@@ -24,6 +25,10 @@ export class WebhookController {
     @Res() res: Response,
     @Headers('stripe-signature') sig: string,
   ) {
+    if (!req.rawBody || !sig)
+      throw new BadRequestException(
+        'Raw body and Stripe signature are required',
+      );
     return this.webhookService.handleWebhook(req.rawBody!, sig, res);
   }
 }

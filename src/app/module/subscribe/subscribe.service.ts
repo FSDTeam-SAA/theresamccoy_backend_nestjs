@@ -41,7 +41,7 @@ export class SubscribeService {
       .skip(skip)
       .limit(limit)
       .sort({ [sortBy]: sortOrder })
-      .populate('user');
+      .select('-user');
 
     return {
       meta: {
@@ -54,7 +54,7 @@ export class SubscribeService {
   }
 
   async getSingleSubscribe(id: string) {
-    const result = await this.subscribeModel.findById(id);
+    const result = await this.subscribeModel.findById(id).select('-user');
     if (!result) throw new HttpException('Subscribe is not found', 404);
     return result;
   }

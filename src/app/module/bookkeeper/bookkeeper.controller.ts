@@ -16,9 +16,11 @@ import {
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
   ApiOperation,
   ApiQuery,
+  ApiTags,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import pick from 'src/app/helpers/pick';
@@ -33,7 +35,10 @@ import {
   CreateExperienceDto,
 } from './dto/create-bookkeeper.dto';
 import { UpdateBookkeeperDto } from './dto/update-bookkeeper.dto';
+import { UpdateMyBookkeeperProfileDto } from './dto/bookkeeper-profile.dto';
+import { ReviewBookkeeperDto } from './dto/review-bookkeeper.dto';
 
+@ApiTags('Bookkeeper')
 @Controller('bookkeeper')
 export class BookkeeperController {
   constructor(private readonly bookkeeperService: BookkeeperService) {}
@@ -67,9 +72,11 @@ export class BookkeeperController {
   @UseGuards(AuthGuard('bookkeeper', 'admin'))
   @HttpCode(HttpStatus.CREATED)
   async createExperience(
+    @Req() req: Request,
     @Param('id') bookkeeperId: string,
     @Body() createExperienceDto: CreateExperienceDto,
   ) {
+    await this.bookkeeperService.assertOwner(bookkeeperId, req.user!);
     const result = await this.bookkeeperService.createExperience(
       bookkeeperId,
       createExperienceDto,
@@ -86,9 +93,11 @@ export class BookkeeperController {
   @UseGuards(AuthGuard('bookkeeper', 'admin'))
   @HttpCode(HttpStatus.CREATED)
   async createSkills(
+    @Req() req: Request,
     @Param('id') bookkeeperId: string,
     @Body() createSkillsDto: CreateBookkeeperSkillsDto,
   ) {
+    await this.bookkeeperService.assertOwner(bookkeeperId, req.user!);
     const result = await this.bookkeeperService.createSkills(
       bookkeeperId,
       createSkillsDto,
@@ -115,6 +124,7 @@ export class BookkeeperController {
   )
   @HttpCode(HttpStatus.CREATED)
   async createAssessment(
+    @Req() req: Request,
     @Param('id') bookkeeperId: string,
     @Body() createAssessmentDto: CreateBookkeeperAssessmentDto,
     @UploadedFiles()
@@ -123,6 +133,7 @@ export class BookkeeperController {
       uploadAssessment?: Express.Multer.File[];
     },
   ) {
+    await this.bookkeeperService.assertOwner(bookkeeperId, req.user!);
     const result = await this.bookkeeperService.createAssessment(
       bookkeeperId,
       createAssessmentDto,
@@ -140,9 +151,11 @@ export class BookkeeperController {
   @UseGuards(AuthGuard('bookkeeper', 'admin'))
   @HttpCode(HttpStatus.CREATED)
   async createAvailability(
+    @Req() req: Request,
     @Param('id') bookkeeperId: string,
     @Body() createAvailabilityDto: CreateBookkeeperAvailabilityDto,
   ) {
+    await this.bookkeeperService.assertOwner(bookkeeperId, req.user!);
     const result = await this.bookkeeperService.createAvailability(
       bookkeeperId,
       createAvailabilityDto,
@@ -229,6 +242,95 @@ export class BookkeeperController {
     };
   }
 
+  @Get('admin/all')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('admin'))
+  @ApiOperation({
+    summary: 'Admin list including pending and rejected profiles',
+  })
+  async adminList(@Req() req: Request) {
+    const result = await this.bookkeeperService.getAllBookkeepers(
+      pick(req.query, ['searchTerm', 'status']),
+      pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']),
+      true,
+    );
+    return { data: result.data, meta: result.meta };
+  }
+
+  @Get('profile/me')
+  @ApiOperation({
+    summary: 'Get the authenticated bookkeeper Profile & Skills page data',
+  })
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('bookkeeper'))
+  @HttpCode(HttpStatus.OK)
+  async getMyProfile(@Req() req: Request) {
+    const result = await this.bookkeeperService.getMyProfile(req.user!.id);
+    return {
+      message: 'Bookkeeper profile retrieved successfully',
+      data: result,
+    };
+  }
+
+  @Patch(':id/review')
+  @ApiOperation({ summary: 'Admin approves or rejects a bookkeeper profile' })
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('admin'))
+  async reviewBookkeeper(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Body() dto: ReviewBookkeeperDto,
+  ) {
+    return {
+      message: 'Bookkeeper review saved successfully',
+      data: await this.bookkeeperService.reviewBookkeeper(
+        id,
+        req.user!.id,
+        dto.status,
+        dto.rejectionReason,
+      ),
+    };
+  }
+
+  @Patch('profile/me')
+  @ApiOperation({
+    summary:
+      'Update personal information, skills, certifications, portfolio and other profile details',
+  })
+  @ApiBearerAuth('access-token')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateMyBookkeeperProfileDto })
+  @UseGuards(AuthGuard('bookkeeper'))
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'profilePicture', maxCount: 1 },
+        { name: 'portfolioFiles', maxCount: 10 },
+      ],
+      fileUpload.uploadConfig,
+    ),
+  )
+  @HttpCode(HttpStatus.OK)
+  async updateMyProfile(
+    @Req() req: Request,
+    @Body() dto: UpdateMyBookkeeperProfileDto,
+    @UploadedFiles()
+    files?: {
+      profilePicture?: Express.Multer.File[];
+      portfolioFiles?: Express.Multer.File[];
+    },
+  ) {
+    const result = await this.bookkeeperService.updateMyProfile(
+      req.user!.id,
+      dto,
+      files,
+    );
+    return {
+      message: 'Bookkeeper profile updated successfully',
+      data: result,
+    };
+  }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Get a single bookkeeper by ID',
@@ -260,6 +362,7 @@ export class BookkeeperController {
   )
   @HttpCode(HttpStatus.OK)
   async updateByBookkeeper(
+    @Req() req: Request,
     @Param('id') id: string,
     @Body() updateBookkeeperDto: UpdateBookkeeperDto,
     @UploadedFiles()
@@ -268,6 +371,7 @@ export class BookkeeperController {
       uploadAssessment?: Express.Multer.File[];
     },
   ) {
+    await this.bookkeeperService.assertOwner(id, req.user!);
     const result = await this.bookkeeperService.updateBookkeeper(
       id,
       updateBookkeeperDto,
@@ -286,7 +390,8 @@ export class BookkeeperController {
   @ApiBearerAuth('access-token')
   @UseGuards(AuthGuard('bookkeeper', 'admin'))
   @HttpCode(HttpStatus.OK)
-  async removeByBookkeeper(@Param('id') id: string) {
+  async removeByBookkeeper(@Req() req: Request, @Param('id') id: string) {
+    await this.bookkeeperService.assertOwner(id, req.user!);
     const result = await this.bookkeeperService.removeBookkeeper(id);
     return {
       message: 'Bookkeeper deleted successfully',

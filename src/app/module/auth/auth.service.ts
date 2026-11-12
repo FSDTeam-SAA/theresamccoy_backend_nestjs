@@ -1,3 +1,4 @@
+import { randomInt, createHash, randomBytes } from 'crypto';
 import { HttpException, Injectable } from '@nestjs/common';
 import * as jwt from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -17,11 +18,19 @@ export class AuthService {
   ) {}
 
   async register(CreateAuthDto: CreateAuthDto) {
+    if (!['bookkeeper', 'business'].includes(CreateAuthDto.role ?? 'business'))
+      throw new HttpException('Invalid registration role', 400);
     const user = await this.userModel.findOne({ email: CreateAuthDto.email });
     if (user) {
       throw new HttpException('User already exists', 400);
     }
-    const newUser = await this.userModel.create(CreateAuthDto);
+    const newUser = await this.userModel.create({
+      firstName: CreateAuthDto.firstName,
+      lastName: CreateAuthDto.lastName,
+      email: CreateAuthDto.email,
+      password: CreateAuthDto.password,
+      role: CreateAuthDto.role ?? 'business',
+    });
     return newUser;
   }
 
@@ -33,6 +42,8 @@ export class AuthService {
       throw new HttpException('User not found', 404);
     }
 
+    if (user.status !== 'active')
+      throw new HttpException('Account is suspended', 403);
     const isPasswordMatch = await bcrypt.compare(
       loginDto.password,
       user.password,
@@ -42,14 +53,24 @@ export class AuthService {
     }
 
     const accessToken = this.jwtService.sign(
-      { id: user._id, email: user.email, role: user.role },
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        tokenVersion: user.tokenVersion ?? 0,
+      },
       {
         secret: config.jwt.accessTokenSecret,
         expiresIn: config.jwt.accessTokenExpires as any,
       } as jwt.JwtSignOptions,
     );
     const refreshToken = this.jwtService.sign(
-      { id: user._id, email: user.email, role: user.role },
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        tokenVersion: user.tokenVersion ?? 0,
+      },
       {
         secret: config.jwt.refreshTokenSecret,
         expiresIn: config.jwt.refreshTokenExpires as any,
@@ -57,20 +78,78 @@ export class AuthService {
     );
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: config.env === 'production',
       sameSite: 'strict',
     });
 
-    return { accessToken, user };
+    const safeUser = user.toObject() as unknown as Record<string, unknown>;
+    for (const key of [
+      'password',
+      'otp',
+      'otpExpiry',
+      'verifiedForget',
+      'resetTokenHash',
+      'resetTokenExpiry',
+      'otpAttempts',
+      'tokenVersion',
+    ])
+      delete safeUser[key];
+    return { accessToken, user: safeUser };
+  }
+
+  async refresh(refreshToken: string | undefined) {
+    if (!refreshToken)
+      throw new HttpException('Refresh token is required', 401);
+    let payload: { id: string; tokenVersion?: number };
+    try {
+      payload = this.jwtService.verify(refreshToken, {
+        secret: config.jwt.refreshTokenSecret,
+      });
+    } catch {
+      throw new HttpException('Invalid or expired refresh token', 401);
+    }
+    const user = await this.userModel.findById(payload.id);
+    if (
+      !user ||
+      user.status !== 'active' ||
+      (payload.tokenVersion ?? 0) !== (user.tokenVersion ?? 0)
+    )
+      throw new HttpException('User is unavailable', 401);
+    return {
+      accessToken: this.jwtService.sign(
+        {
+          id: user._id,
+          email: user.email,
+          role: user.role,
+          tokenVersion: user.tokenVersion ?? 0,
+        },
+        {
+          secret: config.jwt.accessTokenSecret,
+          expiresIn: config.jwt.accessTokenExpires as any,
+        } as jwt.JwtSignOptions,
+      ),
+    };
   }
 
   async forgotPassword(email: string) {
     const user = await this.userModel.findOne({ email });
     if (!user) throw new HttpException('Email not found', 404);
 
-    const generateOtpNumber = Math.floor(100000 + Math.random() * 900000);
+    if (user.otpSentAt && Date.now() - user.otpSentAt.getTime() < 60000)
+      throw new HttpException(
+        'Wait 60 seconds before requesting another OTP',
+        429,
+      );
+    user.otpSentAt = new Date();
+    const generateOtpNumber = randomInt(100000, 1000000);
 
-    user.otp = generateOtpNumber.toString();
+    user.otp = createHash('sha256')
+      .update(generateOtpNumber.toString())
+      .digest('hex');
+    user.verifiedForget = false;
+    user.resetTokenHash = undefined;
+    user.resetTokenExpiry = undefined;
+    user.otpAttempts = 0;
     user.otpExpiry = new Date(Date.now() + 60 * 60 * 1000);
     await user.save();
 
@@ -89,34 +168,69 @@ export class AuthService {
   }
 
   async verifyEmail(email: string, otp: string) {
-    const user = await this.userModel.findOne({ email });
-    if (!user) throw new HttpException('Invalid link', 400);
-
-    if (user.otp !== otp) throw new HttpException('Invalid OTP', 400);
-    if (!user.otpExpiry) throw new HttpException('Invalid OTP', 400);
-    const todayDate = new Date();
-    if (user.otpExpiry < todayDate) throw new HttpException('OTP expired', 400);
-
-    user.otp = undefined;
-    user.otpExpiry = undefined;
-
-    user.verifiedForget = true;
-    await user.save();
-    if (!user.verifiedForget) throw new HttpException('Invalid link', 400);
-
-    return { message: 'OTP verified successfully' };
+    const resetToken = randomBytes(32).toString('hex');
+    // Consume OTP once, atomically. Concurrent verification cannot issue two proofs.
+    const user = await this.userModel.findOneAndUpdate(
+      {
+        email,
+        otp: createHash('sha256').update(otp).digest('hex'),
+        otpExpiry: { $gt: new Date() },
+        otpAttempts: { $lt: 5 },
+      },
+      {
+        $unset: { otp: '', otpExpiry: '' },
+        $set: {
+          verifiedForget: true,
+          resetTokenHash: createHash('sha256').update(resetToken).digest('hex'),
+          resetTokenExpiry: new Date(Date.now() + 10 * 60 * 1000),
+        },
+      },
+      { new: true },
+    );
+    if (!user) {
+      await this.userModel.updateOne(
+        { email, otp: { $exists: true }, otpAttempts: { $lt: 5 } },
+        { $inc: { otpAttempts: 1 } },
+      );
+      throw new HttpException(
+        'Invalid, expired or exhausted OTP; request a new code',
+        400,
+      );
+    }
+    return {
+      message: 'OTP verified successfully',
+      resetToken,
+      expiresInSeconds: 600,
+    };
   }
 
-  async resetPasswordChange(email: string, newPassword: string) {
-    const user = await this.userModel.findOne({ email });
-    if (!user) throw new HttpException('Invalid link', 400);
-
-    if (!user.verifiedForget) throw new HttpException('Invalid link', 400);
-
-    user.password = newPassword;
-    user.verifiedForget = false;
-    await user.save();
-
+  async resetPasswordChange(
+    email: string,
+    newPassword: string,
+    resetToken: string,
+  ) {
+    if (!resetToken) throw new HttpException('Reset token is required', 400);
+    const password = await bcrypt.hash(newPassword, config.bcryptSaltRounds);
+    // Password and one-time proof change in one write; query updates do not run save hooks.
+    const user = await this.userModel.findOneAndUpdate(
+      {
+        email,
+        resetTokenHash: createHash('sha256').update(resetToken).digest('hex'),
+        resetTokenExpiry: { $gt: new Date() },
+      },
+      {
+        $unset: {
+          resetTokenHash: '',
+          resetTokenExpiry: '',
+          otp: '',
+          otpExpiry: '',
+        },
+        $set: { password, verifiedForget: false },
+        $inc: { tokenVersion: 1 },
+      },
+      { new: true, runValidators: true },
+    );
+    if (!user) throw new HttpException('Invalid or expired reset token', 400);
     return { message: 'Password reset successfully' };
   }
 
@@ -137,6 +251,7 @@ export class AuthService {
         400,
       );
 
+    user.tokenVersion = (user.tokenVersion ?? 0) + 1;
     user.password = newPassword;
     await user.save();
 

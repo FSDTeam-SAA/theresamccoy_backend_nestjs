@@ -313,4 +313,65 @@ export class EngagementService {
       .sort({ _id: -1 })
       .limit(50);
   }
+
+  async inbox(actor: JwtPayload) {
+    const memberKey = actor.role === 'business' ? 'businessId' : 'bookkeeperId';
+    const engagements = await this.engagements
+      .find({
+        [memberKey]: actor.id,
+        status: 'active',
+        paymentStatus: 'paid',
+        contactUnlocked: true,
+      })
+      .select('projectTitle businessId bookkeeperId status')
+      .sort({ updatedAt: -1 })
+      .limit(100);
+    // Bounded inbox. Each thread returns a preview and count for the Messages screen.
+    return Promise.all(
+      engagements.map(async (engagement) => {
+        const [lastMessage, unreadCount] = await Promise.all([
+          this.messages
+            .findOne({ engagementId: engagement._id })
+            .sort({ _id: -1 }),
+          this.messages.countDocuments({
+            engagementId: engagement._id,
+            senderId: { $ne: actor.id },
+            readAt: { $exists: false },
+          }),
+        ]);
+        return { engagement, lastMessage, unreadCount };
+      }),
+    );
+  }
+
+  async markMessagesRead(id: string, actor: JwtPayload, through: string) {
+    await this.requireActive(id, actor);
+    if (!Types.ObjectId.isValid(through))
+      throw new BadRequestException('Invalid message cursor');
+    const result = await this.messages.updateMany(
+      {
+        engagementId: id,
+        senderId: { $ne: actor.id },
+        _id: { $lte: new Types.ObjectId(through) },
+        readAt: { $exists: false },
+      },
+      { $set: { readAt: new Date() } },
+    );
+    return { markedRead: result.modifiedCount };
+  }
+
+  async complete(id: string, actor: JwtPayload) {
+    const engagement = await this.findOne(id, actor);
+    if (engagement.status !== 'active')
+      throw new ConflictException('Only active engagements can be completed');
+    if (actor.role !== 'admin' && String(engagement.businessId) !== actor.id)
+      throw new ForbiddenException();
+    const result = await this.engagements.findOneAndUpdate(
+      { _id: id, status: 'active' },
+      { $set: { status: 'completed', completedAt: new Date() } },
+      { new: true },
+    );
+    if (!result) throw new ConflictException('Engagement status changed');
+    return result;
+  }
 }

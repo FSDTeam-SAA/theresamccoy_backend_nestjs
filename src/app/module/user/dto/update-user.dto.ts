@@ -1,4 +1,22 @@
 import { CreateUserDto } from './create-user.dto';
-import { PartialType } from '@nestjs/swagger';
+import { OmitType, PartialType, PickType } from '@nestjs/swagger';
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+// Password and recovery state are changed only through authentication flows.
+export class UpdateUserDto extends PartialType(
+  OmitType(CreateUserDto, [
+    'password',
+    'otp',
+    'otpExpiry',
+    'verifiedForget',
+    'stripeAccountId',
+  ] as const),
+) {}
+export class UpdateMyUserProfileDto extends PartialType(
+  PickType(CreateUserDto, [
+    'firstName',
+    'lastName',
+    'phoneNumber',
+    'profilePicture',
+    'address',
+  ] as const),
+) {}

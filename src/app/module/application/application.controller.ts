@@ -31,6 +31,12 @@ export class ApplicationController {
   /**
    * User form open করবে
    */
+  @Get('forms/published')
+  @ApiOperation({ summary: 'Available published application forms' })
+  async publishedForms() {
+    return { data: await this.formService.publishedForms() };
+  }
+
   @Get('form/:formId')
   @ApiOperation({
     summary: 'Get published application form',

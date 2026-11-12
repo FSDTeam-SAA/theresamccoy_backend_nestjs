@@ -13,6 +13,11 @@ const privateFields = new Set([
 ]);
 const secretFields = new Set([
   'password',
+  'tokenVersion',
+  'otpSentAt',
+  'resetTokenHash',
+  'resetTokenExpiry',
+  'otpAttempts',
   'otp',
   'otpExpiry',
   'verifiedForget',

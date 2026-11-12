@@ -1,3 +1,6 @@
+import { ReviewAssignmentDto } from './dto/review-assignment.dto';
+import { SubmitQuizDto } from './dto/submit-quiz.dto';
+import pick from '../../helpers/pick';
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   Body,
@@ -98,7 +101,7 @@ export class CourseController {
     @Query() options: IOptions,
   ) {
     const result = await this.courseService.getAllCourse(
-      params,
+      pick(params, ['searchTerm', 'name', 'level', 'status']),
       options,
       req.user!.role,
     );
@@ -106,6 +109,15 @@ export class CourseController {
       message: 'Courses retrieved successfully',
       ...result,
     };
+  }
+
+  @Get('catalog/public')
+  @ApiOperation({
+    summary:
+      'Public published course summaries (no lesson content or answer keys)',
+  })
+  async catalog() {
+    return { data: await this.courseService.publicCatalog() };
   }
 
   @Get('my/all')
@@ -141,6 +153,29 @@ export class CourseController {
     return { message: 'Enrollments retrieved successfully', data };
   }
 
+  @Get('admin/assignments')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('admin'))
+  @ApiOperation({
+    summary: 'Assignment submissions for review; optional courseId filter',
+  })
+  async assignments(@Query('courseId') courseId?: string) {
+    return { data: await this.courseService.assignmentSubmissions(courseId) };
+  }
+
+  @Patch('admin/assignments/:id/review')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('admin'))
+  async reviewAssignment(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Body() dto: ReviewAssignmentDto,
+  ) {
+    return {
+      data: await this.courseService.reviewAssignment(id, req.user!.id, dto),
+    };
+  }
+
   @Get(':courseId')
   @ApiOperation({
     summary: 'Get single course details',
@@ -155,6 +190,7 @@ export class CourseController {
     const result = await this.courseService.getSingleCourse(
       courseId,
       req.user!.role,
+      req.user!.id,
     );
     return {
       message: 'Course retrieved successfully',
@@ -383,6 +419,36 @@ export class CourseController {
   ) {
     const data = await this.courseService.addQuizOption(courseId, quizId, dto);
     return { message: 'Quiz option added successfully', data };
+  }
+
+  @Post(':courseId/lesson/:lessonId/quiz/submit')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('bookkeeper'))
+  @ApiOperation({
+    summary: 'Submit all quiz answers; pass threshold is 80 percent',
+  })
+  async submitQuiz(
+    @Req() req: Request,
+    @Param('courseId') courseId: string,
+    @Param('lessonId') lessonId: string,
+    @Body() dto: SubmitQuizDto,
+  ) {
+    return {
+      data: await this.courseService.submitQuiz(
+        req.user!.id,
+        courseId,
+        lessonId,
+        dto,
+      ),
+    };
+  }
+  @Get(':courseId/quiz-attempts/me')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('bookkeeper'))
+  async quizAttempts(@Req() req: Request, @Param('courseId') courseId: string) {
+    return {
+      data: await this.courseService.getQuizAttempts(req.user!.id, courseId),
+    };
   }
 
   @Post(':courseId/lesson/:lessonId/complete')

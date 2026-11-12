@@ -52,6 +52,8 @@ export class BusinesswonerController {
   }
 
   @Get()
+  @UseGuards(AuthGuard('admin'))
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all businesswoner' })
   @ApiQuery({ name: 'searchTerm', description: 'Search term', required: false })
   @ApiQuery({
@@ -106,7 +108,34 @@ export class BusinesswonerController {
     };
   }
 
+  @Get('profile/me')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('business'))
+  @ApiOperation({ summary: 'Get the authenticated business owner profile' })
+  async getMyProfile(@Req() req: Request) {
+    return {
+      message: 'Business profile retrieved successfully',
+      data: await this.businesswonerService.getMyProfile(req.user!.id),
+    };
+  }
+
+  @Patch('profile/me')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('business'))
+  @ApiOperation({ summary: 'Update the authenticated business owner profile' })
+  async updateMyProfile(
+    @Req() req: Request,
+    @Body() dto: UpdateBusinesswonerDto,
+  ) {
+    return {
+      message: 'Business profile updated successfully',
+      data: await this.businesswonerService.updateMyProfile(req.user!.id, dto),
+    };
+  }
+
   @Get(':id')
+  @UseGuards(AuthGuard('admin'))
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get businesswoner by id' })
   @HttpCode(HttpStatus.OK)
   async getBusinesswonerById(@Param('id') id: string) {
@@ -153,7 +182,7 @@ export class BusinesswonerController {
   @Put(':id')
   @ApiOperation({ summary: 'Update businesswoner by id' })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('business', 'admin'))
+  @UseGuards(AuthGuard('admin'))
   @HttpCode(HttpStatus.OK)
   async updateBusinesswonerById(
     @Param('id') id: string,
@@ -172,7 +201,7 @@ export class BusinesswonerController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete businesswoner by id' })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('business', 'admin'))
+  @UseGuards(AuthGuard('admin'))
   @HttpCode(HttpStatus.OK)
   async deleteBusinesswonerById(@Param('id') id: string) {
     const result = await this.businesswonerService.deleteBusinesswoner(id);
