@@ -11,6 +11,7 @@ export enum BookkeeperStatus {
 
 @Schema({ _id: true, versionKey: false })
 export class BookkeeperCertification {
+  @Prop({ trim: true }) fileUrl?: string;
   @Prop({ required: true, trim: true })
   title!: string;
 
@@ -45,6 +46,12 @@ export const BookkeeperPortfolioSchema =
 
 @Schema({ timestamps: true })
 export class Bookkeeper {
+  @Prop({ trim: true }) coverLetterUrl?: string;
+  @Prop({ trim: true }) educationalQualification?: string;
+  @Prop({ type: [String], default: [] }) specializations!: string[];
+  @Prop({ enum: ['draft', 'submitted'], default: 'draft' })
+  applicationStatus!: string;
+  @Prop({ type: Date }) applicationSubmittedAt?: Date;
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   userId!: Types.ObjectId;
 

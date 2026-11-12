@@ -20,7 +20,11 @@ export class AuthService {
   async register(CreateAuthDto: CreateAuthDto) {
     if (!['bookkeeper', 'business'].includes(CreateAuthDto.role ?? 'business'))
       throw new HttpException('Invalid registration role', 400);
-    const user = await this.userModel.findOne({ email: CreateAuthDto.email });
+    if (typeof CreateAuthDto.email !== 'string')
+      throw new HttpException('Email must be a string', 400);
+    const user = await this.userModel.findOne({
+      email: { $eq: CreateAuthDto.email },
+    });
     if (user) {
       throw new HttpException('User already exists', 400);
     }
@@ -35,8 +39,10 @@ export class AuthService {
   }
 
   async login(loginDto: { email: string; password: string }, res: Response) {
+    if (typeof loginDto.email !== 'string')
+      throw new HttpException('Email must be a string', 400);
     const user = await this.userModel
-      .findOne({ email: loginDto.email })
+      .findOne({ email: { $eq: loginDto.email } })
       .select('+password');
     if (!user) {
       throw new HttpException('User not found', 404);
@@ -132,7 +138,9 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    const user = await this.userModel.findOne({ email });
+    if (typeof email !== 'string')
+      throw new HttpException('Email must be a string', 400);
+    const user = await this.userModel.findOne({ email: { $eq: email } });
     if (!user) throw new HttpException('Email not found', 404);
 
     if (user.otpSentAt && Date.now() - user.otpSentAt.getTime() < 60000)
@@ -168,11 +176,16 @@ export class AuthService {
   }
 
   async verifyEmail(email: string, otp: string) {
+    if (typeof email !== 'string')
+      throw new HttpException('Email must be a string', 400);
+    if (typeof otp !== 'string')
+      throw new HttpException('OTP must be a string', 400);
     const resetToken = randomBytes(32).toString('hex');
     // Consume OTP once, atomically. Concurrent verification cannot issue two proofs.
     const user = await this.userModel.findOneAndUpdate(
       {
-        email,
+        // Explicit equality keeps input a value, never a MongoDB operator object.
+        email: { $eq: email },
         otp: createHash('sha256').update(otp).digest('hex'),
         otpExpiry: { $gt: new Date() },
         otpAttempts: { $lt: 5 },
@@ -189,7 +202,11 @@ export class AuthService {
     );
     if (!user) {
       await this.userModel.updateOne(
-        { email, otp: { $exists: true }, otpAttempts: { $lt: 5 } },
+        {
+          email: { $eq: email },
+          otp: { $exists: true },
+          otpAttempts: { $lt: 5 },
+        },
         { $inc: { otpAttempts: 1 } },
       );
       throw new HttpException(
@@ -209,12 +226,15 @@ export class AuthService {
     newPassword: string,
     resetToken: string,
   ) {
-    if (!resetToken) throw new HttpException('Reset token is required', 400);
+    if (typeof email !== 'string')
+      throw new HttpException('Email must be a string', 400);
+    if (typeof resetToken !== 'string' || !resetToken)
+      throw new HttpException('Reset token is required', 400);
     const password = await bcrypt.hash(newPassword, config.bcryptSaltRounds);
     // Password and one-time proof change in one write; query updates do not run save hooks.
     const user = await this.userModel.findOneAndUpdate(
       {
-        email,
+        email: { $eq: email },
         resetTokenHash: createHash('sha256').update(resetToken).digest('hex'),
         resetTokenExpiry: { $gt: new Date() },
       },

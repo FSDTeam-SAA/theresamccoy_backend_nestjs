@@ -29,6 +29,7 @@ import {
   ApiConsumes,
   ApiOperation,
   ApiTags,
+  ApiQuery,
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { fileUpload } from 'src/app/helpers/fileUploder';
@@ -93,8 +94,30 @@ export class CourseController {
     summary: 'Get all courses with pagination and search',
   })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('admin', 'business', 'bookkeeper', 'user'))
+  @UseGuards(AuthGuard('admin', 'business', 'bookkeeper'))
   @HttpCode(HttpStatus.OK)
+  @ApiQuery({ name: 'searchTerm', required: false, type: String })
+  @ApiQuery({ name: 'name', required: false, type: String })
+  @ApiQuery({
+    name: 'level',
+    required: false,
+    enum: ['beginner', 'intermediate', 'advanced'],
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['draft', 'published'],
+    description: 'Only admin can see drafts',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  @ApiQuery({
+    name: 'sortBy',
+    required: false,
+    type: String,
+    example: 'createdAt',
+  })
+  @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'] })
   async getAllCourse(
     @Req() req: Request,
     @Query() params: IFilterParams,
@@ -118,6 +141,17 @@ export class CourseController {
   })
   async catalog() {
     return { data: await this.courseService.publicCatalog() };
+  }
+
+  @Get('my/overview')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('bookkeeper'))
+  @ApiOperation({
+    summary:
+      'Courses dashboard: current lesson/module, completed courses and remaining time',
+  })
+  async learningOverview(@Req() req: Request) {
+    return { data: await this.courseService.learningOverview(req.user!.id) };
   }
 
   @Get('my/all')
@@ -181,7 +215,7 @@ export class CourseController {
     summary: 'Get single course details',
   })
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('admin', 'business', 'bookkeeper', 'user'))
+  @UseGuards(AuthGuard('admin', 'business', 'bookkeeper'))
   @HttpCode(HttpStatus.OK)
   async getSingleCourse(
     @Req() req: Request,

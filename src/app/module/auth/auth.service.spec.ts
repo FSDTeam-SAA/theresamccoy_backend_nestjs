@@ -8,6 +8,58 @@ import { Model } from 'mongoose';
 import { UserDocument } from '../user/entities/user.entity';
 
 describe('authentication boundaries', () => {
+  it.each([{ $ne: null }, { $regex: '.*' }, ['user@example.com'], null])(
+    'rejects non-string email before any recovery query: %j',
+    async (email) => {
+      const findOne = jest.fn();
+      const findOneAndUpdate = jest.fn();
+      const updateOne = jest.fn();
+      const service = new AuthService(
+        {
+          findOne,
+          findOneAndUpdate,
+          updateOne,
+        } as unknown as Model<UserDocument>,
+        {} as JwtService,
+      );
+      await expect(
+        service.forgotPassword(email as unknown as string),
+      ).rejects.toThrow('Email must be a string');
+      await expect(
+        service.verifyEmail(email as unknown as string, '123456'),
+      ).rejects.toThrow('Email must be a string');
+      await expect(
+        service.resetPasswordChange(
+          email as unknown as string,
+          'secret123',
+          'proof',
+        ),
+      ).rejects.toThrow('Email must be a string');
+      expect(findOne).not.toHaveBeenCalled();
+      expect(findOneAndUpdate).not.toHaveBeenCalled();
+      expect(updateOne).not.toHaveBeenCalled();
+    },
+  );
+  it('uses explicit email equality in both OTP verification queries', async () => {
+    const findOneAndUpdate = jest.fn(async () => null);
+    const updateOne = jest.fn(async () => ({}));
+    const service = new AuthService(
+      { findOneAndUpdate, updateOne } as unknown as Model<UserDocument>,
+      {} as JwtService,
+    );
+    await expect(
+      service.verifyEmail('user@example.com', '123456'),
+    ).rejects.toThrow('Invalid, expired or exhausted OTP');
+    expect(findOneAndUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ email: { $eq: 'user@example.com' } }),
+      expect.any(Object),
+      expect.any(Object),
+    );
+    expect(updateOne).toHaveBeenCalledWith(
+      expect.objectContaining({ email: { $eq: 'user@example.com' } }),
+      { $inc: { otpAttempts: 1 } },
+    );
+  });
   it('rejects public admin registration and normalizes email', async () => {
     const dto = plainToInstance(CreateAuthDto, {
       firstName: 'Test',

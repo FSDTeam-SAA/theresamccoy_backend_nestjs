@@ -1,3 +1,4 @@
+import { IsMongoId, Min, Max } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { Type } from 'class-transformer';
@@ -297,6 +298,24 @@ export class SectionDto {
 }
 
 export class CreateApplicationFormDto {
+  @ApiPropertyOptional({
+    example: 45,
+    minimum: 1,
+    maximum: 480,
+    description: 'Estimated assessment duration (not an enforced exam timer)',
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(480)
+  durationMinutes?: number;
+  @ApiPropertyOptional({
+    description:
+      'User must have an approved submission to this form before starting this assessment',
+  })
+  @IsOptional()
+  @IsMongoId()
+  prerequisiteFormId?: string;
   @ApiProperty({
     example: 'Bookkeeper Skills Assessment',
   })

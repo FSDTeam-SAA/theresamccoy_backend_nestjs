@@ -38,6 +38,7 @@ For `Public` routes no login is required. Other rows list allowed account roles.
 | GET | `/api/v1/bookkeeper/profile/me` | bookkeeper | — |
 | PATCH | `/api/v1/bookkeeper/:id/review` | admin | ReviewBookkeeperDto |
 | PATCH | `/api/v1/bookkeeper/profile/me` | bookkeeper | UpdateMyBookkeeperProfileDto |
+| POST | `/api/v1/bookkeeper/profile/me/application/submit` | bookkeeper | — |
 | GET | `/api/v1/bookkeeper/:id` | Public | — |
 | PATCH | `/api/v1/bookkeeper/:id` | bookkeeper, admin | UpdateBookkeeperDto |
 | DELETE | `/api/v1/bookkeeper/:id` | bookkeeper, admin | — |
@@ -64,14 +65,15 @@ For `Public` routes no login is required. Other rows list allowed account roles.
 | GET | `/api/v1/content/admin/:slug` | admin | — |
 | PUT | `/api/v1/content/admin/:slug` | admin | UpdatePageContentDto |
 | POST | `/api/v1/course` | admin | CreateCourseDto |
-| GET | `/api/v1/course` | admin, business, bookkeeper, user | — |
+| GET | `/api/v1/course` | admin, business, bookkeeper | — |
 | GET | `/api/v1/course/catalog/public` | Public | — |
+| GET | `/api/v1/course/my/overview` | bookkeeper | — |
 | GET | `/api/v1/course/my/all` | bookkeeper | — |
 | GET | `/api/v1/course/enrollments/me` | bookkeeper | — |
 | GET | `/api/v1/course/enrollments/all` | admin | — |
 | GET | `/api/v1/course/admin/assignments` | admin | — |
 | PATCH | `/api/v1/course/admin/assignments/:id/review` | admin | ReviewAssignmentDto |
-| GET | `/api/v1/course/:courseId` | admin, business, bookkeeper, user | — |
+| GET | `/api/v1/course/:courseId` | admin, business, bookkeeper | — |
 | PATCH | `/api/v1/course/:courseId` | admin | UpdateCourseDto |
 | DELETE | `/api/v1/course/:courseId` | admin | — |
 | POST | `/api/v1/course/:courseId/module` | admin | AddModuleDto |
@@ -122,6 +124,7 @@ For `Public` routes no login is required. Other rows list allowed account roles.
 | PATCH | `/api/v1/request/reject/:requestId` | bookkeeper | — |
 | GET | `/api/v1/request/:id` | admin | — |
 | POST | `/api/v1/reviews` | business, bookkeeper | CreateReviewDto |
+| GET | `/api/v1/reviews/me` | bookkeeper, business | — |
 | GET | `/api/v1/reviews/user/:userId` | Public | — |
 | POST | `/api/v1/subscribe` | admin | CreateSubscribeDto |
 | GET | `/api/v1/subscribe` | Public | — |

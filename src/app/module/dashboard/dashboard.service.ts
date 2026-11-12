@@ -1,3 +1,5 @@
+import { CourseService } from '../course/course.service';
+import { ApplicationFormService } from '../application/application-form.service';
 import { SupportService } from '../support/support.service';
 import { Bookkeeper } from '../bookkeeper/entities/bookkeeper.entity';
 import { Businesswoner } from '../businesswoner/entities/businesswoner.entity';
@@ -22,6 +24,8 @@ import { Request } from '../request/entities/request.entity';
 @Injectable()
 export class DashboardService {
   constructor(
+    private readonly courseService: CourseService,
+    private readonly formService: ApplicationFormService,
     @InjectModel(Bookkeeper.name)
     private readonly bookkeepers: Model<Bookkeeper>,
     @InjectModel(Businesswoner.name)
@@ -46,34 +50,90 @@ export class DashboardService {
 
   async myOverview(actor: JwtPayload) {
     const isBusiness = actor.role === 'business';
-    const [profile, contracts, inbox, training, applications, supportUnread] =
-      await Promise.all([
-        isBusiness
-          ? this.businesses.findOne({ userId: actor.id })
-          : this.bookkeepers.findOne({ userId: actor.id }),
-        this.engagements
-          .find({ [isBusiness ? 'businessId' : 'bookkeeperId']: actor.id })
-          .sort({ createdAt: -1 })
-          .limit(100),
-        this.engagementService.inbox(actor),
-        isBusiness
-          ? []
-          : this.progress
-              .find({ userId: actor.id })
-              .populate(
-                'courseId',
-                'name modules._id modules.name modules.lessons._id',
-              ),
-        isBusiness
-          ? []
-          : this.applications
-              .find({ userId: actor.id })
-              .select('formId status score submittedAt')
-              .sort({ createdAt: -1 })
-              .limit(10),
-        this.support.unread(actor.id),
-      ]);
+    const [
+      profile,
+      contracts,
+      inbox,
+      training,
+      applications,
+      supportUnread,
+      assessments,
+      learning,
+    ] = await Promise.all([
+      isBusiness
+        ? this.businesses.findOne({ userId: actor.id })
+        : this.bookkeepers.findOne({ userId: actor.id }),
+      this.engagements
+        .find({ [isBusiness ? 'businessId' : 'bookkeeperId']: actor.id })
+        .sort({ createdAt: -1 })
+        .limit(100),
+      this.engagementService.inbox(actor),
+      isBusiness
+        ? []
+        : this.progress
+            .find({ userId: actor.id })
+            .populate(
+              'courseId',
+              'name modules._id modules.name modules.lessons._id',
+            ),
+      isBusiness
+        ? []
+        : this.applications
+            .find({ userId: actor.id })
+            .select('formId status score submittedAt')
+            .sort({ createdAt: -1 })
+            .limit(10),
+      this.support.unread(actor.id),
+      isBusiness ? [] : this.formService.publishedForms(actor.id),
+      isBusiness ? null : this.courseService.learningOverview(actor.id),
+    ]);
+    const details = profile as unknown as Bookkeeper | null;
+    const completionItems = isBusiness
+      ? []
+      : [
+          {
+            key: 'personalInformation',
+            complete: !!details?.firstName && !!details?.lastName,
+          },
+          {
+            key: 'professionalBio',
+            complete: !!details?.professionalBio?.trim(),
+          },
+          {
+            key: 'workExperience',
+            complete:
+              details?.yearsOfExperience != null || !!details?.experience,
+          },
+          { key: 'skills', complete: !!details?.skills?.length },
+          {
+            key: 'certifications',
+            complete: !!details?.certifications?.length,
+          },
+          { key: 'portfolio', complete: !!details?.portfolio?.length },
+          {
+            key: 'hourlyRate',
+            complete: details?.hourlyRate != null && details.hourlyRate > 0,
+          },
+          { key: 'resume', complete: !!details?.uploadResume },
+        ];
+    const scored = (applications as ApplicationSubmission[]).filter((item) =>
+      ['reviewed', 'approved', 'rejected'].includes(item.status),
+    );
     return {
+      profileCompletion: isBusiness
+        ? null
+        : {
+            percentage: Math.round(
+              (completionItems.filter((item) => item.complete).length /
+                completionItems.length) *
+                100,
+            ),
+            items: completionItems,
+          },
+      marketplaceStatus: details?.status ?? 'not_started',
+      assessmentScore: isBusiness ? null : (scored[0]?.score ?? null),
+      assessments,
+      learning,
       profile,
       contracts,
       activeEngagements: contracts.filter((item) => item.status === 'active')

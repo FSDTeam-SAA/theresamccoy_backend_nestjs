@@ -2,7 +2,11 @@
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
+import { createRequire } from 'module';
 import tseslint from 'typescript-eslint';
+
+var require = createRequire(import.meta.url);
+var module = { exports: {} };
 
 export default tseslint.config(
   {

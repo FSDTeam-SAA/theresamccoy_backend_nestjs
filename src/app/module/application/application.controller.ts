@@ -33,16 +33,16 @@ export class ApplicationController {
    */
   @Get('forms/published')
   @ApiOperation({ summary: 'Available published application forms' })
-  async publishedForms() {
-    return { data: await this.formService.publishedForms() };
+  async publishedForms(@Req() req: Request) {
+    return { data: await this.formService.publishedForms(req.user!.id) };
   }
 
   @Get('form/:formId')
   @ApiOperation({
     summary: 'Get published application form',
   })
-  async getForm(@Param('formId') formId: string) {
-    const data = await this.formService.getPublishedForm(formId);
+  async getForm(@Req() req: Request, @Param('formId') formId: string) {
+    const data = await this.formService.getPublishedForm(formId, req.user!.id);
 
     return {
       success: true,

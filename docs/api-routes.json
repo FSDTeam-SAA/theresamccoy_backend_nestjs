@@ -224,6 +224,13 @@
     "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
   },
   {
+    "method": "POST",
+    "endpoint": "/api/v1/bookkeeper/profile/me/application/submit",
+    "roles": "bookkeeper",
+    "body": "—",
+    "file": "src/app/module/bookkeeper/bookkeeper.controller.ts"
+  },
+  {
     "method": "GET",
     "endpoint": "/api/v1/bookkeeper/:id",
     "roles": "Public",
@@ -408,7 +415,7 @@
   {
     "method": "GET",
     "endpoint": "/api/v1/course",
-    "roles": "admin, business, bookkeeper, user",
+    "roles": "admin, business, bookkeeper",
     "body": "—",
     "file": "src/app/module/course/course.controller.ts"
   },
@@ -416,6 +423,13 @@
     "method": "GET",
     "endpoint": "/api/v1/course/catalog/public",
     "roles": "Public",
+    "body": "—",
+    "file": "src/app/module/course/course.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/course/my/overview",
+    "roles": "bookkeeper",
     "body": "—",
     "file": "src/app/module/course/course.controller.ts"
   },
@@ -457,7 +471,7 @@
   {
     "method": "GET",
     "endpoint": "/api/v1/course/:courseId",
-    "roles": "admin, business, bookkeeper, user",
+    "roles": "admin, business, bookkeeper",
     "body": "—",
     "file": "src/app/module/course/course.controller.ts"
   },
@@ -809,6 +823,13 @@
     "endpoint": "/api/v1/reviews",
     "roles": "business, bookkeeper",
     "body": "CreateReviewDto",
+    "file": "src/app/module/review/review.controller.ts"
+  },
+  {
+    "method": "GET",
+    "endpoint": "/api/v1/reviews/me",
+    "roles": "bookkeeper, business",
+    "body": "—",
     "file": "src/app/module/review/review.controller.ts"
   },
   {

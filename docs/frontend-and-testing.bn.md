@@ -1,10 +1,12 @@
+Bookkeeper-এর নতুন screen-specific নির্দেশনা: [Bookkeeper integration guide](bookkeeper-integration.bn.md)। Shareable Swagger file: [OpenAPI JSON](openapi.json)।
+
 # Frontend API ও backend testing guide
 
 Base URL: `http://localhost:3000/api/v1` (PORT বদলালে URL বদলাবেন)। Swagger: `http://localhost:3000/api/docs`। সম্পূর্ণ method/path/access/body DTO: [API reference](api-reference.md)। Postman-এ `/api/docs-json` URL import করলে request schema পাবেন; [collection](backend.postman_collection.json) সব route-এর inventory, automatic test runner নয়।
 
 ## আগে local test করুন
 
-এই পরিবর্তনের পরে build এবং মোট ৪১টি automated test পাস করেছে: ২৬টি unit/regression, ৮টি mocked HTTP এবং ৭টি temporary MongoDB integration test।
+এই পরিবর্তনের পরে build এবং মোট ৫০টি automated test পাস করেছে: ৩১টি unit/regression, ৮টি mocked HTTP এবং ১১টি temporary MongoDB integration test।
 
 1. `npm ci` চালান।
 2. `.env.example` দেখে local `.env` সেট করুন। বিদ্যমান `.env` overwrite করবেন না। MongoDB-এর জন্য আলাদা local database ব্যবহার করুন।

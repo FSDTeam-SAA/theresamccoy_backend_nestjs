@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 
 export type ApplicationFormDocument = HydratedDocument<ApplicationForm>;
 
@@ -308,6 +308,9 @@ export const SectionSchema = SchemaFactory.createForClass(Section);
   versionKey: false,
 })
 export class ApplicationForm {
+  @Prop({ min: 1, max: 480, default: 45 }) durationMinutes!: number;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'ApplicationForm' })
+  prerequisiteFormId?: Types.ObjectId;
   @Prop({ required: true })
   title!: string;
 
