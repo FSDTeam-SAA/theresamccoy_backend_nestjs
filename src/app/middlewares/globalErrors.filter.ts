@@ -169,7 +169,8 @@ export class GlobalExceptionFilter<T> implements ExceptionFilter {
     }
 
     // 13  Generic JS Error
-    else if (err instanceof Error) {
+    else if (err instanceof Error && isDev) {
+      // Unclassified errors are 500s; only echo internals in development.
       message = err.message;
       errorSources = [{ path: '', message: err.message }];
     }
